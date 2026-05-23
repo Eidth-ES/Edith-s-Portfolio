@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经历 / Experiences</title>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="experiences.css">
+</head>
+<body>
+    <div id="experiences-container">
+        <div class="floating-tags">
+            <div class="tag-block" data-category="content">内容创作+运营</div>
+            <div class="tag-block" data-category="strategy">数据分析与策略制定</div>
+            <div class="tag-block" data-category="hr">人力相关</div>
+        </div>
+        <div class="experiences-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1>EXPERIENCES</h1>
+                <a href="index.html" class="back-to-home">← 返回主页</a>
+            </div>
+        </div>
+        <div class="experiences-list" id="experiences-list"></div>
+    </div>
+
+    <div id="detail-page" class="detail-page">
+        <div class="detail-nav">
+            <a href="#" class="back-btn" onclick="closeDetail()">← BACK</a>
+            <div class="nav-links">
+                <span>PLAY</span>
+                <span>ABOUT</span>
+            </div>
+        </div>
+        <div class="detail-content">
+            <h1 id="detail-title"></h1>
+            <p id="detail-period"></p>
+            <div class="detail-mascot" id="detail-mascot"></div>
+        </div>
+    </div>
+
+    <script src="experiences.js"></script>
+</body>
+</html>

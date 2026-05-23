@@ -1,0 +1,2205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>作品集</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+  <style>
+    :root {
+      --home-bg: #f4f4f4;
+      --home-topbar-h: clamp(44px, 6vh, 64px);
+      --home-gap: clamp(10px, 2vh, 18px);
+      --home-card-size: min(70vmin, 56rem, calc(100vh - var(--home-topbar-h) - 18rem));
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html.lenis, html.lenis body { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto !important; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: "Special Elite", "Songti SC", "SimSun", serif;
+      background: var(--home-bg);
+      cursor: none;
+      overflow-x: hidden;
+    }
+    body.page-detail-open { overflow: hidden; height: 100vh; }
+
+    /* Custom cursor */
+    .cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 40px;
+      height: 40px;
+      margin: -20px 0 0 -20px;
+      border: 2px solid #111;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000;
+      mix-blend-mode: difference;
+      background: transparent;
+    }
+    .cursor-dot {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      margin: -4px 0 0 -4px;
+      border-radius: 50%;
+      background: #111;
+      pointer-events: none;
+      z-index: 10001;
+    }
+
+    .page { display: none; }
+    .page.is-active { display: block; }
+
+    /* —— Home —— */
+    #home {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--home-bg);
+      padding-top: var(--home-topbar-h);
+    }
+    #home .home-topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--home-topbar-h);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 60;
+      background: rgba(244, 244, 244, 0.92);
+      border-bottom: 2px solid rgba(0, 0, 0, 0.12);
+    }
+    #home .home-index {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(10px, 2vw, 26px);
+      padding: 0 1rem;
+      max-width: min(92vw, 72rem);
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    #home .home-index button {
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: clamp(12px, 1.2vw, 18px);
+      letter-spacing: 0.02em;
+      color: rgba(0, 0, 0, 0.7);
+      padding: 0.4rem 0.25rem;
+      cursor: pointer;
+      transition: color 0.25s, transform 0.25s;
+    }
+    #home .home-index button.is-current {
+      color: #111;
+      transform: translateY(-1px);
+    }
+    #home .slider-viewport {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    #home .slider-track {
+      display: flex;
+      height: 100%;
+      will-change: transform;
+    }
+    #home .slide-panel {
+      flex: 0 0 100vw;
+      width: 100vw;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: var(--home-gap);
+      padding: 1rem 1.5rem;
+    }
+    @media (min-width: 768px) {
+      #home .slide-panel { padding: 1.5rem 2.5rem; }
+    }
+    #home .slide-card {
+      width: var(--home-card-size);
+      max-width: none;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      aspect-ratio: auto;
+    }
+    #home .slide-card-inner {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+    }
+    #home .slide-card h2 {
+      position: static;
+      left: auto;
+      bottom: auto;
+      transform: none;
+      margin: var(--home-gap) 0 0 0;
+      font-size: clamp(16px, 2.2vw, 32px);
+      text-align: center;
+      white-space: normal;
+      width: 100%;
+    }
+
+    .slide-card {
+      position: relative;
+      width: 100%;
+      max-width: 56rem;
+      aspect-ratio: 1 / 1;
+      cursor: pointer;
+    }
+    .slide-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 1rem;
+      overflow: hidden;
+      /* 素描风边框 */
+      border: 2px solid #2a2a2a;
+      box-shadow:
+        3px 3px 0 rgba(0, 0, 0, 0.12),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.35),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.06);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, transparent 45%, rgba(0, 0, 0, 0.04) 100%),
+        repeating-linear-gradient(
+          -8deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 0, 0, 0.03) 2px,
+          rgba(0, 0, 0, 0.03) 3px
+        );
+    }
+    .slide-card-inner::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 1px dashed rgba(0, 0, 0, 0.25);
+      pointer-events: none;
+    }
+    .slide-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.65s ease;
+    }
+    .slide-card:hover img { transform: scale(1.05); }
+    .slide-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.35), transparent 55%);
+      pointer-events: none;
+    }
+    .slide-card-gloss {
+      position: absolute;
+      inset: -4px;
+      border-radius: 1.1rem;
+      opacity: 0.28;
+      pointer-events: none;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.45) 0%, transparent 50%, rgba(0, 0, 0, 0.08) 100%);
+    }
+    .slide-card h2 {
+      position: absolute;
+      left: 50%;
+      bottom: -3.25rem;
+      transform: translateX(-50%);
+      margin: 0;
+      font-size: clamp(1.1rem, 3.5vw, 2rem);
+      font-weight: 700;
+      white-space: nowrap;
+      letter-spacing: 0.06em;
+      color: #111;
+    }
+    #home .home-card-quote {
+      margin: 0;
+      max-width: min(90vw, 56rem);
+      font-size: clamp(14px, 1.6vw, 24px);
+      font-weight: 400;
+      line-height: 1.35;
+      letter-spacing: 0.02em;
+      text-align: center;
+      color: #000;
+      pointer-events: none;
+    }
+    @media (max-width: 640px) {
+      .slide-card h2 { white-space: normal; text-align: center; width: 90%; bottom: -4.5rem; }
+    }
+
+    #home .dots {
+      position: fixed;
+      bottom: clamp(18px, 3vh, 40px);
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: clamp(10px, 1.2vw, 16px);
+      z-index: 50;
+    }
+    #home .dots button {
+      width: clamp(10px, 1vw, 12px);
+      height: clamp(10px, 1vw, 12px);
+      border-radius: 50%;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.28);
+      transition: transform 0.3s, background 0.3s;
+    }
+    #home .dots button.is-current {
+      background: #111;
+      transform: scale(1.45);
+    }
+    #home .scroll-hint {
+      position: fixed;
+      right: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      opacity: 0.45;
+      pointer-events: none;
+    }
+    @media (max-width: 640px) {
+      #home .scroll-hint { display: none; }
+    }
+
+    /* —— Detail pages —— */
+    .detail-page {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+    }
+    .detail-page.is-active { display: flex; }
+    .detail-page .back-btn {
+      position: fixed;
+      top: 1.5rem;
+      left: 1.5rem;
+      z-index: 120;
+      padding: 0.65rem 1.25rem;
+      border: 2px solid #111;
+      border-radius: 0.5rem;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.25s, color 0.25s, transform 0.25s;
+    }
+    .detail-page .back-btn:hover {
+      background: #111;
+      color: #fff;
+      transform: translateX(-3px);
+    }
+    .detail-page .detail-title {
+      position: fixed;
+      top: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 110;
+      margin: 0;
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      font-weight: 700;
+      text-align: center;
+      max-width: 70vw;
+    }
+    .detail-body {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      margin-top: 5.5rem;
+      padding: 0 1rem 1.5rem;
+      gap: 1rem;
+    }
+    @media (min-width: 768px) {
+      .detail-body {
+        flex-direction: row;
+        padding: 0 1.5rem 2rem;
+        gap: 0;
+      }
+    }
+    .detail-aside {
+      flex-shrink: 0;
+      width: 100%;
+      max-height: 38vh;
+      overflow-y: auto;
+      padding-right: 0.25rem;
+    }
+    @media (min-width: 768px) {
+      .detail-aside {
+        width: 18rem;
+        max-height: none;
+        position: sticky;
+        top: 5.5rem;
+        align-self: flex-start;
+        max-height: calc(100vh - 6rem);
+        overflow-y: auto;
+      }
+    }
+    .detail-aside .cat-nav {
+      display: flex;
+      flex-direction: row;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+      overflow-x: auto;
+    }
+    @media (min-width: 768px) {
+      .detail-aside .cat-nav {
+        flex-direction: column;
+        overflow-x: visible;
+      }
+    }
+    .detail-aside .cat-nav button,
+    .detail-aside .article-list button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 0.65rem 0.85rem;
+      border: none;
+      border-radius: 0.5rem;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.25s, transform 0.25s;
+    }
+    @media (min-width: 768px) {
+      .detail-aside .cat-nav button,
+      .detail-aside .article-list button { white-space: normal; }
+    }
+    .detail-aside .cat-nav button:hover,
+    .detail-aside .article-list button:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    .detail-aside .cat-nav button.is-active,
+    .detail-aside .article-list button.is-active {
+      background: rgba(0, 0, 0, 0.1);
+      font-weight: 700;
+    }
+    .detail-aside .article-list {
+      display: flex;
+      flex-direction: row;
+      gap: 0.35rem;
+      overflow-x: auto;
+    }
+    @media (min-width: 768px) {
+      .detail-aside .article-list {
+        flex-direction: column;
+        overflow-x: visible;
+      }
+    }
+    .detail-main {
+      flex: 1;
+      min-height: 0;
+      min-width: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-left: 0;
+    }
+    @media (min-width: 768px) {
+      .detail-main { padding-left: 1.5rem; }
+    }
+    .content-box {
+      background: #fff;
+      border-radius: 1rem;
+      padding: 1.5rem 1.25rem;
+      min-height: 50vh;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+    @media (min-width: 768px) {
+      .content-box { padding: 2rem 2.5rem; min-height: 60vh; }
+    }
+    .content-box .placeholder {
+      color: #9ca3af;
+      text-align: center;
+      padding: 3rem 1rem;
+      font-style: italic;
+    }
+    .content-box .article-body {
+      color: #111;
+      line-height: 1.75;
+      font-size: 1rem;
+    }
+    #sariel-page .content-box .article-body {
+      text-align: left;
+    }
+    #sariel-page .content-box .article-body .text {
+      white-space: pre-wrap;
+      line-height: 1.2;
+    }
+    #evan-page .content-box .article-body {
+      text-align: left;
+    }
+    #evan-page .content-box .article-body .text {
+      white-space: pre-wrap;
+      line-height: 1.2;
+    }
+    #slices-page .content-box .article-body {
+      text-align: left;
+    }
+    #slices-page .content-box .article-body .text {
+      white-space: pre-wrap;
+      line-height: 1.2;
+    }
+    .content-box .article-body h1 {
+      font-size: 1.5rem;
+      margin-top: 0;
+    }
+    #slices-page .content-box .article-body h1 { color: #000; }
+    #original-page .content-box .article-body {
+      text-align: left;
+    }
+    #original-page .content-box .article-body .text {
+      white-space: pre-wrap;
+      line-height: 1.2;
+    }
+    #original-page .content-box .article-body iframe {
+      display: block;
+      width: 100%;
+      height: 70vh;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+
+  <!-- Home -->
+  <div id="home" class="page is-active" data-lenis-prevent>
+    <div class="home-topbar">
+      <nav class="home-index" id="homeIndex" aria-label="作品集索引">
+        <button type="button" data-slide="0" data-clickable>光夜同人-Evan</button>
+        <button type="button" data-slide="1" data-clickable>光夜同人-Sariel</button>
+        <button type="button" data-slide="2" data-clickable>光夜切片</button>
+        <button type="button" data-slide="3" data-clickable>原创武侠言情</button>
+      </nav>
+    </div>
+    <div class="slider-viewport">
+      <div class="slider-track" id="sliderTrack">
+        <div class="slide-panel">
+          <p class="home-card-quote">I offer you the bitterness of a man who has looked long and long at the lonely moon.</p>
+          <div class="slide-card" data-target="evan-page" data-clickable>
+            <div class="slide-card-inner">
+              <img src="public/images/evan.jpg.jpg" alt="光夜同人-Evan" />
+              <div class="slide-card-overlay"></div>
+              <div class="slide-card-gloss"></div>
+            </div>
+            <h2>光夜同人-Evan</h2>
+          </div>
+        </div>
+        <div class="slide-panel">
+          <p class="home-card-quote">If we do —face to face. Look at the whole earth and the ocean. Look at all of me.</p>
+          <div class="slide-card" data-target="sariel-page" data-clickable>
+            <div class="slide-card-inner">
+              <img src="public/images/sariel.jpg.jpg" alt="光夜同人-Sariel" />
+              <div class="slide-card-overlay"></div>
+              <div class="slide-card-gloss"></div>
+            </div>
+            <h2>光夜同人-Sariel</h2>
+          </div>
+        </div>
+        <div class="slide-panel">
+          <div class="slide-card" data-target="slices-page" data-clickable>
+            <div class="slide-card-inner">
+              <img src="public/images/slices.jpg.jpg" alt="光夜切片" />
+              <div class="slide-card-overlay"></div>
+              <div class="slide-card-gloss"></div>
+            </div>
+            <h2>光夜切片</h2>
+          </div>
+        </div>
+        <div class="slide-panel">
+          <div class="slide-card" data-target="original-page" data-clickable>
+            <div class="slide-card-inner">
+              <img src="public/images/original.jpg.jpg" alt="原创武侠言情" />
+              <div class="slide-card-overlay"></div>
+              <div class="slide-card-gloss"></div>
+            </div>
+            <h2>原创武侠言情</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="dots" id="sliderDots"></div>
+    <div class="scroll-hint">SCROLL →</div>
+  </div>
+
+  <!-- Evan -->
+  <div id="evan-page" class="page detail-page" style="background-color: hsl(334, 25%, 95%);">
+    <button type="button" class="back-btn" data-back data-clickable>← 返回</button>
+    <h1 class="detail-title" style="color: hsl(334, 25%, 25%);">光夜同人 - Evan</h1>
+    <div class="detail-body">
+      <aside class="detail-aside" data-index-color="hsl(334, 25%, 40%)">
+        <nav class="cat-nav" id="evan-cats"></nav>
+        <div class="article-list" id="evan-articles"></div>
+      </aside>
+      <main class="detail-main" id="evan-scroll">
+        <div class="lenis-inner">
+          <div class="content-box" id="evan-content">
+            <p class="placeholder">请从左侧选择文章</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Sariel -->
+  <div id="sariel-page" class="page detail-page" style="background-color: #D9FFF7;">
+    <button type="button" class="back-btn" data-back data-clickable>← 返回</button>
+    <h1 class="detail-title" style="color: hsl(197, 12%, 22%);">光夜同人 - Sariel</h1>
+    <div class="detail-body">
+      <aside class="detail-aside" data-index-color="hsl(197, 12%, 40%)">
+        <nav class="cat-nav" id="sariel-cats"></nav>
+        <div class="article-list" id="sariel-articles"></div>
+      </aside>
+      <main class="detail-main" id="sariel-scroll">
+        <div class="lenis-inner">
+          <div class="content-box" id="sariel-content">
+            <p class="placeholder">请从左侧选择文章</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Slices -->
+  <div id="slices-page" class="page detail-page" style="background-color: hsl(49, 56%, 95%);">
+    <button type="button" class="back-btn" data-back data-clickable>← 返回</button>
+    <h1 class="detail-title" style="color: #333;">光夜切片</h1>
+    <div class="detail-body">
+      <aside class="detail-aside" data-index-color="#000">
+        <div class="article-list" id="slices-articles" style="flex-direction: column;"></div>
+      </aside>
+      <main class="detail-main" id="slices-scroll">
+        <div class="lenis-inner">
+          <div class="content-box" id="slices-content">
+            <p class="placeholder">请从左侧选择文章</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Original -->
+  <div id="original-page" class="page detail-page" style="background-color: #f4f4f4;">
+    <button type="button" class="back-btn" data-back data-clickable>← 返回</button>
+    <h1 class="detail-title" style="color: #222;">原创武侠言情</h1>
+    <div class="detail-body">
+      <aside class="detail-aside" data-index-color="#4a4a4a">
+        <div class="article-list" id="original-articles" style="flex-direction: column;"></div>
+      </aside>
+      <main class="detail-main" id="original-scroll">
+        <div class="lenis-inner">
+          <div class="content-box" id="original-content">
+            <p class="placeholder">请从左侧选择文章</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+(function () {
+  var SLIDE_COUNT = 4;
+  var currentSlide = 0;
+  var isSlideAnimating = false;
+  var isPageTransitioning = false;
+
+  var sliderTrack = document.getElementById("sliderTrack");
+  var sliderDots = document.getElementById("sliderDots");
+  var home = document.getElementById("home");
+  var homeIndex = document.getElementById("homeIndex");
+  var cursorRing = document.getElementById("cursorRing");
+  var cursorDot = document.getElementById("cursorDot");
+
+  var lenisRoot = null;
+  var lenisRafId = null;
+
+  function startLenisForElement(wrapperEl) {
+    stopLenis();
+    if (typeof Lenis === "undefined" || !wrapperEl) return;
+    var inner = wrapperEl.querySelector(".lenis-inner");
+    if (!inner) return;
+    try {
+      lenisRoot = new Lenis({
+        wrapper: wrapperEl,
+        content: inner,
+        duration: 1.15,
+        smoothWheel: true,
+        wheelMultiplier: 1,
+      });
+      function raf(t) {
+        if (!lenisRoot) return;
+        lenisRoot.raf(t);
+        lenisRafId = requestAnimationFrame(raf);
+      }
+      lenisRafId = requestAnimationFrame(raf);
+    } catch (e) {
+      lenisRoot = null;
+    }
+  }
+
+  function startLenisWindow() {
+    stopLenis();
+    document.documentElement.classList.add("lenis", "lenis-smooth");
+    if (typeof Lenis === "undefined") return;
+    try {
+      lenisRoot = new Lenis({
+        duration: 1.15,
+        smoothWheel: true,
+      });
+      function raf(t) {
+        if (!lenisRoot) return;
+        lenisRoot.raf(t);
+        lenisRafId = requestAnimationFrame(raf);
+      }
+      lenisRafId = requestAnimationFrame(raf);
+    } catch (e) {
+      lenisRoot = null;
+    }
+  }
+
+  function stopLenis() {
+    if (lenisRafId) {
+      cancelAnimationFrame(lenisRafId);
+      lenisRafId = null;
+    }
+    if (lenisRoot && typeof lenisRoot.destroy === "function") {
+      lenisRoot.destroy();
+    }
+    lenisRoot = null;
+  }
+
+  function syncDots() {
+    var dots = sliderDots.querySelectorAll("button");
+    for (var i = 0; i < dots.length; i++) {
+      dots[i].classList.toggle("is-current", i === currentSlide);
+    }
+  }
+
+  function syncIndex() {
+    if (!homeIndex) return;
+    var btns = homeIndex.querySelectorAll("button");
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].classList.toggle("is-current", i === currentSlide);
+    }
+  }
+
+  function goToSlide(index, skipIfSame) {
+    if (index < 0 || index >= SLIDE_COUNT) return;
+    if (skipIfSame && index === currentSlide) return;
+    if (isSlideAnimating) return;
+    isSlideAnimating = true;
+    currentSlide = index;
+    var x = -index * window.innerWidth;
+    gsap.to(sliderTrack, {
+      x: x,
+      duration: 0.85,
+      ease: "power3.inOut",
+      onComplete: function () {
+        isSlideAnimating = false;
+      },
+    });
+    var cards = document.querySelectorAll("#home .slide-card");
+    cards.forEach(function (card, i) {
+      gsap.to(card, {
+        scale: i === index ? 1 : 0.92,
+        opacity: i === index ? 1 : 0.62,
+        duration: 0.55,
+        ease: "power2.out",
+      });
+    });
+    syncDots();
+    syncIndex();
+  }
+
+  function buildDots() {
+    sliderDots.innerHTML = "";
+    for (var i = 0; i < SLIDE_COUNT; i++) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.setAttribute("data-clickable", "");
+      b.addEventListener("click", function (idx) {
+        return function () {
+          goToSlide(idx, false);
+        };
+      }(i));
+      sliderDots.appendChild(b);
+    }
+    syncDots();
+    syncIndex();
+  }
+
+  function bindHomeIndex() {
+    if (!homeIndex) return;
+    homeIndex.querySelectorAll("button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var idx = parseInt(btn.getAttribute("data-slide") || "0", 10);
+        if (!Number.isFinite(idx)) idx = 0;
+        goToSlide(idx, false);
+      });
+    });
+  }
+
+  function getActiveDetailScroll() {
+    var d = document.querySelector(".detail-page.is-active");
+    if (!d) return null;
+    return d.querySelector(".detail-main");
+  }
+
+  function showHome() {
+    stopLenis();
+    document.body.classList.remove("page-detail-open");
+    document.documentElement.classList.remove("lenis", "lenis-smooth");
+    document.querySelectorAll(".page, .detail-page").forEach(function (el) {
+      el.classList.remove("is-active");
+    });
+    home.classList.add("is-active");
+    document.querySelectorAll("#home .slide-card").forEach(function (card) {
+      gsap.set(card, { scale: 1, opacity: 1, clearProps: "transform" });
+    });
+    gsap.set(home, { opacity: 0 });
+    gsap.to(home, { opacity: 1, duration: 0.5, ease: "power2.out" });
+    goToSlide(currentSlide, false);
+    startLenisWindow();
+  }
+
+  function onCardNavigate(pageId, cardEl) {
+    if (isPageTransitioning) return;
+    isPageTransitioning = true;
+    stopLenis();
+    var inner = cardEl.querySelector(".slide-card-inner");
+    var tl = gsap.timeline({
+      onComplete: function () {
+        home.classList.remove("is-active");
+        document.querySelectorAll(".detail-page").forEach(function (el) {
+          el.classList.remove("is-active");
+        });
+        var target = document.getElementById(pageId);
+        if (!target) {
+          isPageTransitioning = false;
+          showHome();
+          return;
+        }
+        target.classList.add("is-active");
+        document.body.classList.add("page-detail-open");
+        document.documentElement.classList.add("lenis", "lenis-smooth");
+        gsap.set(target, { opacity: 0 });
+        gsap.set(cardEl, { scale: 1 });
+        gsap.set(inner, { scale: 1, opacity: 1 });
+        gsap.to(target, {
+          opacity: 1,
+          duration: 0.5,
+          ease: "power2.out",
+          onComplete: function () {
+            isPageTransitioning = false;
+            var sc = getActiveDetailScroll();
+            if (sc) startLenisForElement(sc);
+          },
+        });
+      },
+    });
+    tl.to(cardEl, { scale: 1.05, duration: 0.2, ease: "power2.out" }, 0);
+    tl.to(cardEl, { scale: 0.96, opacity: 0, duration: 0.45, ease: "power3.in" }, 0.15);
+    tl.to(home, { opacity: 0, duration: 0.35, ease: "power2.in" }, 0.1);
+  }
+
+  /* —— Article data —— */
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function makeArticleHtml(title, text) {
+    return (
+      "<h1>" +
+      escapeHtml(title) +
+      "</h1><div class=\"text\">" +
+      escapeHtml(text) +
+      "</div>"
+    );
+  }
+
+  function joinLines(lines) {
+    return lines.join("\n");
+  }
+
+  var evanCategoryBlock = [
+    {
+      id: "epilogue",
+      name: "后记篇",
+      articles: [
+        {
+          id: "ep-1",
+          title: "群居动物后记/陆沉独白",
+          content: makeArticleHtml(
+            "群居动物后记/陆沉独白",
+            joinLines([
+              "（一）",
+              "我怕她看到的是我掩藏着的灵魂，那些残缺、冷寂、肮脏的边角。可灵魂深处叫嚣着隐秘的期待，期待她的目光照进那些角落，将我彻底剖开。",
+              "",
+              "（二）",
+              "我再次梦到了那只棕熊，",
+              "风雪肆虐，但落到耳边却是寂静的，我甚至听不到自己的声音",
+              "雪越下越大，弥天的白像是吃掉了周围的一切，也吃掉了周遭死一样的寂静",
+              "在它又一次转身离开的时候，我好像又能听到声音，有风刮过我的脸",
+              "雪停了，落日血红的光线再次照在我的脸上",
+              "我听到了我的名字",
+              "“陆沉……陆沉……”",
+              "担心的、快乐的、带着哭腔的……是她的声音",
+              "流浪着的意义似乎开始下沉，在落日眩目的暖光里，终于在我心底降落。",
+            ])
+          ),
+        },
+        {
+          id: "ep-2",
+          title: "再见荒原后记/陆沉独白",
+          content: makeArticleHtml(
+            "再见荒原后记/陆沉独白",
+            joinLines([
+              "仇恨的滋长比想象中的更加难以控制，整个计划终于要走到终章。",
+              "我站在树下，放任自己再次构筑了一个幻境，享受这场即将到来的死亡的预演。",
+              "汹涌的海水淹没了一切，我感受到荆棘又一次自胸腔蔓延开，皮肉开始脱落，血液渗入海水中，像是没有尽头。",
+              "我感受不到疼痛，",
+              "我似乎就要带着族群和罪恶离开了，我应该释然吗？",
+              "没有人告诉我。",
+              "闭上眼睛的时候，脑海中为什么会是那家咖啡馆，",
+              "门开了，她再次走进来…",
+              "深夜的英国街头，这次换她拉住我的手，就这么跑下去…",
+              "海盗银币、飞舞的羽毛、无数个黄昏…",
+              "母亲的琴谱，那把演奏过《所罗门》的大提琴…",
+              "无数细小的丝线从记忆的碎片中生长出来，越过盘绕的荆棘，",
+              "密密麻麻的将那些即将脱落的血肉托住。",
+              "毁灭的循环似乎有了一个出口，幻境消散了。",
+              "我感受到了温热的触感，是她拉住了我的手。",
+            ])
+          ),
+        },
+      ],
+    },
+    {
+      id: "daily",
+      name: "日常篇",
+      articles: [
+        {
+          id: "da-1",
+          title: "陆沉“饿”一个月会怎么样",
+          content: makeArticleHtml(
+            "陆沉“饿”一个月会怎么样",
+            joinLines([
+              "这段时间，你为了新项目绞尽脑汁，陆沉每天搂着梦里还在嘟囔选什么面料的你，总会心疼地吻你额头。",
+              "按摩枕被他丢到一边，小熊抱枕也堆到床角，陆沉半躺着环住你，把你的头枕到他胸前，手指轻轻拢住你的发丝，再一下下按压。",
+              "也许该怪他的怀抱的确好躺，比抱枕还舒服。你抓着他睡衣领口，又往深处埋了埋，熟悉的苦艾气息丝丝缕缕，妥帖的把你的疲惫熨烫平整。",
+              "这时候，是应该亲他的。你索性抱着他的脖子，想抬头尝尝那处久违的柔软。可困意却抵挡不住，眼睛怎么也睁不开，努力了几次，摇摇晃晃的脑袋还没碰到他下巴，就一下子被他接住。",
+              "“睡吧，我一直都在”陆沉低低的声音带着点笑意，飘进你睡前最后的一丝意识。",
+              "怎么笑声也这么好听，睡醒了一定要亲他。",
+              "陆沉知道你很看中这次的作品，嘴上说着要行驶老板的权利给你放假，却还是在你加班的时候默默准备了你喜欢的东西。于是每天万甄的办公室里总会定时飘出香味，勾引某只在工位焦头烂额的兔子小姐闻香识小熊。",
+              "当然，吃饭之余附赠吸熊福利，陆沉这段时间会穿很板正的西装，然后让你随便弄乱，以获得在pristine主理人办公室换衣服的机会。",
+              "至于床头柜的那些东西，自然也没有了用武之地。可你明明累的不行，回家后却总时不时的跃跃欲试，几次点火不灭后，陆沉默默把那些都丢到抽屉里，跟一堆沙滩裤作伴。",
+              "一个月后，设计稿完成的那天晚上，你发现陆沉好像在翻放沙滩裤的那个抽屉。",
+              "第二天在年假前的办公室，换衣服的事情似乎有些失控了…",
+              "你在一阵接一阵灼热的苦艾香中终于亲了个够，这才后知后觉陆沉哪里是在翻沙滩裤，分明是在找他的“餐具”。",
+            ])
+          ),
+        },
+        {
+          id: "da-2",
+          title: "扑进陆沉的怀抱",
+          content: makeArticleHtml(
+            "扑进陆沉的怀抱",
+            joinLines([
+              "一个多月的设计巡展，你带着团队满世界飞，少有这么久跟陆沉异地的时间。",
+              "虽然这段时间行李总是一减再减，你还是习惯带着陆沉的照片，每换一个地方，你都会先把陆沉的照片放在办公桌一角。",
+              "照片是你抓拍的，光启去年冬天下第一场雪的时候，那天你们尝试了新买的一款咖啡豆，外面落了雪，你们窝在沙发上。陆沉手里被你塞了热气腾腾的咖啡，抬头就发现你在抓拍。",
+              "于是你的相框里就多了一只眯眯眼笑的小熊先生。陆沉甚至觉得不够，不知道在哪里买到的毛绒线套，小熊耳朵的，套在相框上。",
+              "现在这只“小熊”就这么静静地坐在你的办公桌上。这段时间无数个烦躁的、怀疑的、沮丧的时刻，好像只要看一眼，就会莫名其妙地安心下来。这是陆沉的魔法，一只都很好用。",
+              "相框外小小的空间渐渐被你填充了新的痕迹。他读书时喜欢去的书店最近展览的纪念票根，上个巡展地，你去天文台拍的玫瑰星云照片，一则Taeve刚流行时他留言过的帖子上建议的面包店，面包包装纸上的限定蝴蝶结…",
+              "你们每天在共享文档里计算重逢的时间，有时候你太忙，忘记更新自己的时间，打开，会发现小熊头像的图标在你的表格那一栏跳啊跳。想着屏幕后的陆沉就这么盯着你的表格，你的心里就像涨满了一样。",
+              "倒计时五天，你跟陆沉的消息记录停留在今天早上，他应该是有个紧急会议要开。你关掉手机，去往郊区的一处树林小屋做最后一个主题展的收尾工作。",
+              "老橡木门被推开，深秋的风搅着榛子的甜香，卷起你的衣角。",
+              "陆沉围着你喜欢的那条格子围巾，倚着门框，阳光懒懒的在他的眼镜框上闪着，最终落在你桌子上那张他笑着喝咖啡的照片上。",
+              "你笑着扑进他怀中，柔软的，熟悉的，是秋天的陆沉会有的独特触感。",
+              "拥抱似乎不够，你攀着他的后背，跳了跳。",
+              "“真是只小兔子”。陆轻轻用力，托住你的腰，两个人的距离变得很近很近。",
+              "好像就这样，无数个黄昏流淌过，时间失去了锚点，融化在他落在你耳边的吻中。",
+            ])
+          ),
+        },
+        {
+          id: "da-3",
+          title: "陆沉会跳angle吗",
+          content: makeArticleHtml(
+            "陆沉会跳angle吗",
+            joinLines([
+              "最近你动了学柠檬叉的心，只不过这几周大秀太忙，疏于练习，你发现自己有点手脚不协调。",
+              "反正这周陆沉在出差，你又刚结束一个大秀，晚上回家没事，就在客厅看着视频学舞步的拆解。讲解视频很多，你无意间刷到了一位当红小生的拆解视频，讲解简单易懂，再加上那张脸确实赏心悦目，你当即决定按照这个来学。",
+              "虽然天气还没完全转凉，客厅里还是提前铺了地毯，应该是陆沉出差前就布置好的，是你喜欢的那条的同款。至于原来那条，在你们某个意乱情迷的夜里遭遇了一些“事故”，只好用新的替换掉。",
+              "你踢掉碍事的鞋，站在地毯上，跟着视频一遍遍拆解舞步。或许是太过投入，根本没有注意到屏幕里已经映出了更好看的一张脸。",
+              "跳到“cause you will always be my…”的节拍，你正往后一步，手上刚刚好是一个摸出去的动作…",
+              "嗯？坚硬的胸膛…？！",
+              "你回头，发现陆沉暗红的眼睛正盯着你，",
+              "“小姑娘在学什么，这么专注？”他的眼神停在手机上，视频里的当红小生正在wave,配上恰到好处的眼神，多少带着点勾人的意味。",
+              "你心道不妙，手上还是控制不住的摸了一把，就这么靠在他怀里小声解释。",
+              "陆沉的眼神明显暗了几分，但耳边的声音却温柔的不像话，还带了点…委屈？",
+              "“小姑娘最近喜欢这些？可以让我一起学吗”",
+              "不过当晚两人一起学跳舞的事情被搁置了，毕竟，还有更重要的事",
+              "……",
+              "躺在床上，你刚从迷蒙中缓过来，心想还好没有再弄坏这张地毯。小腹被他的胳膊拢着，翻身，你抬眼撞进陆沉的眸子，湿漉漉的，分不清是汗还是他眼里的雾。",
+              "他这个样子，你向来拒绝不了。",
+              "今晚折腾的尤其晚，不知道是不是那个舞蹈视频的缘故。",
+              "陆沉拒绝看你手机上那个拆解视频，理由很简单：“兔子小姐怎么跳，我就怎么跳。”",
+              "他少有这么孩子气的时候，你又拒绝不了了。",
+              "于是每天晚上，你们踢掉鞋在地毯上一起跳Angel。",
+              "不得不承认，陆沉就是学什么都很快，而且没了‘指导视频”，你们还添加了些别的动作",
+              "有时跳错了，索性就随心那么跳下去了。",
+              "也许是看他跳舞格外赏心悦目，有时候你会偷懒一下子坐在地毯上，让他跳，美其名曰验收成果，而陆沉对此的接受度良好，甚至你总觉得，他是故意的。",
+            ])
+          ),
+        },
+        {
+          id: "da-4",
+          title: "陆沉的海边日记",
+          content: makeArticleHtml(
+            "陆沉的海边日记",
+            joinLines([
+              "Thu.",
+              "家里的咖啡豆最近消耗的有点快，不过这次消耗咖啡豆的主力军变成了小姑娘。",
+              "梦里嚷嚷要休假，第二天还要斗志昂扬的去上班…",
+              "睡前她给我摘眼镜的频率变得很低，昨天特地穿了她喜欢的那套，可惜窗帘拉到一半，某只小兔子已经睡过去了。",
+              "早上浴室里，她看着自己那件本该清清爽爽收回衣柜的真丝睡衣挂在阳台晾着，还愣了好一会儿。",
+              "找了个理由搪塞过去了…",
+              "不得不承认，在pristine最近这个她大喊着年终奖有着落的项目面前，我这个专属抱枕对小兔子似乎失去了些吸引力。",
+              "嗯，这次项目结束该给pristine部门放个假了。",
+              "Fri.",
+              "上午发出放假通知，下午她就拉着我选了几条沙滩裤。",
+              "酒红的，她说衬我的皮肤，至于裤角一排毛茸茸的小熊头…是她的独家设计。",
+              "这次休假，她选了海岛。说是“摸鱼”的时候鱼看到博主在海底摸鱼，很心动。不过考虑到这几天她生理期快到了，海底摸鱼改成了钓鱼。",
+              "Sat.",
+              "前几天没亲到的，在海滩上补回来了。",
+              "小姑娘选的海域，说是绝对不会空军。",
+              "她好像很喜欢抛竿出去那一瞬间的快感，眼睛亮晶晶的，又想亲她了。",
+              "一小时，小姑娘送出去半盒鱼饵，箱子里还是空荡荡的。",
+              "看着她气鼓鼓的说说自己是打窝仙人，鱼钓没钓到不知道，我好像被钓到了。",
+              "Sun.",
+              "陪着小姑娘戴着草帽，在船上头挨着头，“守窝待鱼”。",
+              "落日的第一缕橘黄色的光铺在海平面的时候，小姑娘的鱼竿终于动了。",
+              "是条巴掌长的石鲷鱼，回酒店的路上，她就已经想好要怎么吃了。",
+              "落日把我们的影子拉的很长，海岸在身后延伸，有她挽着我，只想这条路永远都没有尽头",
+              "发现她很喜欢的这个海岸度假酒店是我的产业？其实是在看到她的“看海清单”前就投资了的。这样算不算跟兔子小姐心有灵犀？",
+              "煎鲷鱼的时候，小姑娘把手伸进我的口袋里说“陆沉我要到你的钱包里暖手”。",
+              "抓住了，申请给小姑娘当一辈子的金牌暖手袋。",
+              "至于处理鲷鱼的手艺，是在英国的时候练出来的。",
+              "满级留子就是要成为家里的好厨子？好吧，以后小姑娘的鱼都由我来做。",
+              "毕竟只是做条鱼就有可能收获她的夸赞和亲吻，怎么想都是稳赚不赔的买卖：）",
+              "Mon.",
+              "起晚了，昨晚是小姑娘摘的眼镜…",
+              "终于做回了她的专属抱枕。",
+              "窗外的海浪声和她的呼吸一起落在耳边，就这么躺在床上，也未尝不可。",
+              "昨晚有些过了，揉她腰的时候发现指痕还没消。",
+              "假期再延长一天吧，就当是我贪心。",
+              "Tue.",
+              "标记世界各地的海岸，没有去过的，想和她一起去，去过的，也想要跟她再去无数次。",
+              "跳伞，浮潜…这些热烈的奔赴自由的瞬间，因为有她一起而幸福加倍。",
+            ])
+          ),
+        },
+        {
+          id: "da-5",
+          title: "小熊先生的吸兔法则",
+          content: makeArticleHtml(
+            "小熊先生的吸兔法则",
+            joinLines([
+              "你最近为Pristine大秀“宗教与禁忌”的主题头疼，连续加班快要一个周了。",
+              "陆沉则是刚结束了一场跨境收购，按理说，这几天应该是他的休息日，但你发现董事长办公室的灯还是如往常一样亮到很晚，又总是很默契的在你快要下班的时候熄灭。",
+              "万甄的模拟秀场，模特们试完了服装，准备下班，你反复看着刚刚拍的照片，总觉得哪里需要改，却又找不到头绪。",
+              "你索性坐在一边，顺手打开了之前录在手机里的大提琴曲。是几周前你故意在陆沉微醺的时候把他拉到琴室录的。意外地，每次你心绪烦乱的时候，听着这个总会平静下来。",
+              "听着听着，你发现这首听了无数次的，有些走调的咏叹调似乎不一样了，在一个本该转错调的地方，音调回归了正常。抬头的瞬间，红幕后的琴声戛然而止。",
+              "“在找我？”陆沉低低的声音传来，像是这首咏叹调的余音。",
+              "幕帘被打开，周遭凝固的暗色红晕开始流动，最终汇于他的眼中。",
+              "桌上的圣像石膏散落在地，粘稠的酒浆在圣像翅膀上蜿蜒出繁复的暗纹，他就在这一片流动的光影中。陆沉支着身体，琴被放在一旁，身上穿着的正是你新设计的那套以酒神为灵感的衣服。扣子已然解开，袍带也已经松了，光滑的红色面料堆叠着，像是在领口碾碎了一颗饱满馥郁的浆果，让人移不开眼。",
+              "当真是美色误人。",
+              "你把手里的材料一扔，落入一个柔软的怀抱，酒香裹在苦艾的气息里一寸寸缠上你的呼吸。",
+              "他的声音软软地落在耳边，带着几分不易察觉的委屈“一周了，小姑娘似乎更喜欢一个人待着看那些人的照片”。",
+              "你笑着蹭他的脸，“所以老板本人要来竞争模特吗？”",
+              "小剧场：",
+              "兔：“怎么想到穿这个的？”",
+              "熊：“不好看吗？之前你总说这种时候解我的领扣和袖扣很麻烦。”",
+              "兔（绕着熊领口衣料的手顿住）",
+              "熊：“暂停键是我按的，没注意到？只是觉得某只小兔子垂着头看照片的样子很可爱，想为她送上现场演奏的曲子，而且，听曲子的人忙了这么久，是不是也该按一下暂停键了？”",
+              "熊：“我有错，我承认，这几天故意留在公司加班，是为了多陪小姑娘一会儿”",
+              "熊：“那现在，可以请小姑娘帮我摘一下眼镜吗？”",
+            ])
+          ),
+        },
+      ],
+    },
+    {
+      id: "dimension",
+      name: "次元篇",
+      articles: [
+        {
+          id: "di-1",
+          title: "当他来到你的世界",
+          content: makeArticleHtml(
+            "当他来到你的世界",
+            joinLines([
+              "陆沉做了个梦，醒来的时候，已经不在光启市了，映入眼帘的是互相拥抱着的熊和兔子玩偶，他尝试着动动，却发现自己变成了一只棉花娃娃。",
+              "透过桌上的镜子，他看到自己的样子，红色的眼睛，金丝的镜框…身上的衣服虽然只有巴掌大小，却有板有眼，裁剪地很合身。至于为什么裤子的某些角度显得比较突出…看样子应该是你喜欢的风格。",
+              "墙上贴着女孩的照片。他认得，是每次透过屏幕看到的，你的样子。他一张又一张地看过去，如同你在“游戏活动”里一点点探索他一样，展开一张没有尽头的地图，了解他所不知道的关于你的一切。那些曾经空缺的部分一点点填满了他的心。",
+              "他终于确认，自己通过娃娃的身体，来到了你的世界。这个认知让他的棉花心胀地满满的，却又让他恐惧，他不清楚自己可以在这个世界陪你多久。",
+              "他突然想起那个变成娃娃的夜晚，是听到了你的呼唤，也想起，在他来到你的世界的这段日子里，你总是会呼唤他的名字。",
+              "有时候是吃着饭就会喊他，看到什么有意思的事，读到什么让你想起他的话…遇到什么开心的事…他的名字成了你生活中许多回忆的注脚。",
+              "因为，即便是在这个看不到他的世界里，在无数个想要分享的时刻，你想到的人里，总会有他。",
+              "陆沉喜欢你每一次叫他名字的声音。快乐的，带着上扬尾调的，亦或是闷闷不乐的，一定要喊着他名字才会放松的…无论是陆沉，Evan, 小熊先生还是你突发奇想的各种称呼，每一次你的呼唤，都好像让棉花娃娃里的他更加真实的存在。",
+              "原来，你呼喊的每一声，也都是他的专属咒语。",
+              "两个世界打破交界，是因为爱。",
+            ])
+          ),
+        },
+      ],
+    },
+  ];
+
+  var sarielCategoryBlock = [
+    {
+      id: "epilogue",
+      name: "后记篇",
+      articles: [
+        {
+          id: "ep-1",
+          title: "和鸣在深后记：皇叔厨艺好",
+          content: makeArticleHtml(
+            "和鸣在深后记：皇叔厨艺好",
+            joinLines([
+              "成为“洗手做羹汤”的貌美夫君后，齐司礼在某人的软磨硬泡中，开始编写食谱。",
+              "每尝试一次新的食物，食谱上就多出一页，四季流转，家里的雕花橱柜里已经码了厚厚的十几本，风格迥异，色彩丰富。有时候，还会看到上面用白色绒毛和绣球花瓣粘的一簇簇团花。",
+              "封面潇洒的一行“百舌鸟食谱：齐门秘术”（第一卷、第二卷…），一看就是出自笨鸟大王之手。",
+              "而每一行“齐门秘术”下，总是别别扭扭的躺着齐司礼的名字，瘦金体上盖着红指印，一大一小，吵吵闹闹地挤在一起。",
+              "夜里用了一碗菌汤面，你仍是觉得不过瘾，在被窝里翻来覆去，成功吵醒了快要入睡的齐司礼。",
+              "“齐司礼，后厨是不是还有半罐梨花蜜？”",
+              "齐司礼：“怎么，又开始惦记上梨花酥了？”",
+              "你拉着他的胳膊，嘴却还硬着，“只是突然想起来那些蜜放到明早，会不会坏掉？”",
+              "齐司礼捉住怀里乱动的手，哼了一声：“我看是某人心里有鬼”",
+              "话虽这么说着，齐司礼还是掀开被子准备下床，是乘胜追击的好时候。",
+              "“皇叔大人，杨梅饮也来一杯”",
+              "齐司礼穿衣的手一顿，声音悠悠“没事齐司礼，有事皇叔大人…” ，说到这里，他似是想到了什么，耳尖晕开一抹红，衣带随手一系便去了厨房。",
+              "不消半刻钟，齐司礼抱着食盒回来，身上混着酥饼的醇香和春夜繁盛的花香。",
+              "梨花酥在烛火明灭中泛着黄灿灿的光，咬下一口，熟悉的酥软和香甜种还带着一种奇特的甜味。",
+              "一边咬着梨花酥，一边喝着杨梅饮，你偏头问齐司礼“好吃，你加了什么进来？”",
+              "齐司礼看着很快就要见底的酒壶，笑着拿开。",
+              "“某人前几日不总是自诩天下第一舌，尝不出来了？”",
+              "你咽下最后一口杨梅饮，还没来得及说什么，齐司礼的吻就落了下来。",
+              "酥香，酒香，花香还有他的气息铺天盖地而来…",
+              "翌日，最新的一本食谱写到最后一页。",
+              "齐司礼清隽遒劲的笔迹之间，夹着某人的用餐点评：嗯，这个厨艺好，那个“厨艺”也好。",
+            ])
+          ),
+        },
+        {
+          id: "ep-2",
+          title: "循息如络后记：笨鸟大王有自己的香妃",
+          content: makeArticleHtml(
+            "循息如络后记：笨鸟大王有自己的香妃",
+            joinLines([
+              "齐司礼身上的味道总是很丰富。",
+              "鲜桃味，那是他每年夏天的限定气味。处理完一大筐夏末甜桃，他指尖总会染上一股清润的甜香，你吃完桃子，就抱着桃子味的齐司礼不撒手。",
+              "当然，有些时候，笨鸟大王会用力气和手段，比如用狐尾草把狐狸本体诱出来，然后去花园，抱着他在花丛里滚一滚，于是从头发丝到狐狸毛，沾满春日繁盛的花木香气。",
+              "还有每一个好天气，你跟他晒完太阳，两人身上混在一起的，暖融融的味道。",
+              "渐渐地，你发现你无药可救的染上了一个不闻齐司礼味就不能安眠的坏毛病。于是哪怕是在外出差，你都要带上他的一件衣服，压在枕头下面，或者盖在身上。",
+              "有时候你会“意外发现”一些口袋里，有拳头大的一团柔软的狐狸毛。",
+              "是谁放的，好难猜。",
+              "齐司礼每次打视频来，看到的都是他的衣服像尾巴一样缠在你身上。",
+              "“我的衣服就让你那么爱不释手？”齐司礼嘴上这么说，脸已经红了。",
+              "调戏狐狸的机会岂能放过？",
+              "你眨眨眼，问他怎么才能腌入这么好闻的“狐狸味”，果然屏幕另一边，齐司礼的耳尖也红了。",
+              "“不要胡言乱语，早点回家，我来接你。”",
+              "在你抱着他又一次便吸边叹“齐司礼你做我的香妃吧”的时候，齐司礼把人捉进了调香室。",
+              "你掏出的狐尾草打乱了调香进程，却也成了彻底染上狐狸味的“帮凶”",
+              "两个人的气味纠缠在一起，齐司礼抱着昏昏沉沉的你闷笑。",
+              "原来某只笨鸟还不知道，他身上这些气味，记忆，变化，都是在你的爱里生长出来的，幸福的痕迹，天长地久，细水长流。",
+            ])
+          ),
+        },
+      ],
+    },
+    {
+      id: "daily",
+      name: "日常篇",
+      articles: [
+        {
+          id: "da-1",
+          title: "狐鸟夫妇一日timeline",
+          content: makeArticleHtml(
+            "狐鸟夫妇一日timeline",
+            joinLines([
+              "7：00",
+              "（狐）起床失败，尾巴被抱住",
+              "（鸟）起床失败，一定要把狐狸耳朵摸出来",
+              "8：00",
+              "（鸟）梦到狐妖，大喊美人快来本王怀抱，起床失败",
+              "（狐）做早饭，发现预留的小蛋糕胚不翼而飞",
+              "9：00",
+              "（鸟）书房改稿",
+              "（狐）花园浇水，院子里的玫瑰和芍药都开了",
+              "9：11",
+              "（鸟）发现旁边多了把椅子，椅子上多了个齐司礼",
+              "11：00",
+              "（鸟）拆齐司礼出差带回来的礼物，拆饿了",
+              "（狐）做午饭，换上鸟买的粉色围裙",
+              "（鸟）抢夺厨房使用权，未遂，但成功亲到狐，满意",
+              "15：00",
+              "（鸟）摘了一篮芍药",
+              "（狐）午休醒来，发现自己被花围住",
+              "（鸟）“小狐狸就该被花簇拥”",
+              "床头多了张笨鸟大设计师的手稿：花丛里躺着齐司礼，旁边是一只圆滚滚的抱尾巴白狐，白狐头上躺着小鸟，配文：“俏狐狸憨卧芍药丛”",
+              "20：30",
+              "（鸟）瑜伽兽式拉伸",
+              "（狐）瑜伽陪练…（变成狐狸）",
+              "（狐鸟）滚到院子的草地上，躺着看月亮，消耗掉一盒桂花糯米糕",
+              "21：20",
+              "（狐）整理狐狸毛",
+              "（鸟）弄乱狐狸毛",
+              "22：00",
+              "…阁楼地毯乱了，调香室和卧室也没有幸免",
+              "（狐）咬坏了给鸟设计的睡袍系带",
+              "（鸟）扯掉了给狐设计的睡裤绒球",
+              "23：09",
+              "（狐）给笨鸟洗澡，换床单，下单补货一些消耗品",
+              "（鸟）梦到明天的菜谱和毛茸茸的尾巴",
+            ])
+          ),
+        },
+        {
+          id: "da-2",
+          title: "狐狸窝建设工程",
+          content: makeArticleHtml(
+            "狐狸窝建设工程",
+            joinLines([
+              "秋天来了，普通的床已经满足不了你的要求，也许是因为怪最近突变的天气和骤降的气温，你越来越想要有一个暖乎乎的窝，能猫在里面不出来的那种。",
+              "床上已经架了床帐，软厚的青绿色布料是齐司礼陪你选的，上面一开始只是些简单的图案，不过在你每天躺在床上玩着他衣角异想天开过后，床帐上的图案渐渐丰富起来：",
+              "蜂蜜罐，吃过一次蜂蜜饼干后你在伸懒腰，随口说胳膊碰到的地方显得有些空旷，第二天早上蜂蜜罐就缝上去了，也不知道是哪只狐狸半夜不睡觉偷偷摸摸缝的。",
+              "上班路上看到的形状奇特的花，狐狸头一样的云彩，旅行返程你睡着，歪歪扭扭靠在他肩头的样子，还有他某天睡的翘起一角的头发…这些图案都会在某天突然出现在床帐一角。晚上你洗了澡往床上一躺，头顶的床帐因为你上床的动作还微微波动着，目之所及，像是属于你们的每一角时光，都汇成了头顶这一片小小的，流动着的青色银河。",
+              "不够，还是不够。",
+              "这天齐司礼洗完了澡，却没像往常一样找到每天准时窝进床上的你，狐疑的看了一圈，敏锐的捕捉到阁楼露出的一角亮光。你穿着他的睡袍，腰带系的歪歪扭扭，蹲在阁楼地上，正在从一个包里掏什么",
+              "白色的…狐狸毛…",
+              "齐司礼嘴角抽了抽。",
+              "这么多，应该是收集了有一阵了。",
+              "齐司礼推开门，正在把狐狸毛缝进睡衣的你被抓了个正着。他的表情僵了一瞬，紧接着你被拉着坐在了他腿上。",
+              "“哦，这么喜欢我的毛？所以前几天开着空调拉着帐子也说冷的不行，非要抱着我的尾巴才肯睡，是为了这些？”",
+              "你环住他的腰，倒是坦诚的很“嗯，也不是每天晚上都能抱尾巴嘛…”",
+              "齐司礼的手把你环的紧了些，捞起地上的缝了一半的睡衣，抱着你起身，拍蓬松的尾巴不知道什么时候变了出来，托在你腰上。",
+              "“狐狸窝里有狐狸就够了。”",
+              "天旋地转，床帐落下，齐司礼温热的气息扑面而来。",
+              "“还有，每天都抱尾巴…”齐司礼说着，捉住你不听话的手，“你确定第二天能起得来？”",
+              "搭窝的计划没实现，连自己毛的醋都吃的狐狸弄塌了床帐，被你捉住了把柄。",
+              "于是晚上阁楼的灯下，用狐狸毛缝床帐的多了一位狐狸本尊。",
+            ])
+          ),
+        },
+        {
+          id: "da-3",
+          title: "当你问齐司礼被仍花是什么感觉",
+          content: makeArticleHtml(
+            "当你问齐司礼被仍花是什么感觉",
+            joinLines([
+              "pristine穿越系列新一季中式男装，你说需要模特，又说衣带复杂，一定要你来帮他系才行。",
+              "于是齐司礼压着笑却还努力板着脸，张开手臂，任凭不怀好意的某只笨鸟在自己身上上下其手。",
+              "齐司礼低着头，耳朵有些发烫。",
+              "你整个人都挂上来了，一下下抓着衣带的样子，真像一只进食的小鸟…啄啄啄。",
+              "你手上戴着的他刚送的镯子，没错，上次发过秋天刚开的金灿灿的桂花后，手上就多了这条同样金灿灿的狐狸爪抱小鸟的手镯了，这几天也一直戴着，上面的聚宝盆随着你系他衣带的动作转啊转。",
+              "你听到他在耳边低笑。",
+              "你也学他的样子板着脸，“齐司礼你认真点”",
+              "结果刚给齐司礼系好衣带，某人自己就先“不务正业”了，毕竟这身俏衣裳披到他身上，怎么看怎么忍不住。",
+              "“再摸就要乱了” 齐司礼的声音明显哑了几度，也不知乱的是衣服还是某人的心。",
+              "他这么说着，你就在一边的摇椅上一躺，齐司礼刚酿好的桂花酒就这么被你吊着酒壶手柄送到嘴里。",
+              "月色从窗边漫过来，月下看美人，你喝着齐司礼的酒，越靠越近，玩齐司礼的头发。",
+              "“喝醉了？” 温热的气息贴着你的耳朵，你哆嗦着把酒壶放下。",
+              "花瓶里是他今天还没来得及插的芙蓉，你反手摸过去。",
+              "“齐司礼，你做将军的时候，被扔花是什么感觉？”",
+              "齐司礼一愣，芙蓉一枝接一枝被仍在他怀里，有几朵你手快拆了花瓣，纷纷扬扬飘落在他头顶。你还没来得及仔细欣赏，就被拉入一个温暖的怀抱。一时间也分不清包裹住自己的是芙蓉花还是齐司礼了。",
+              "“从前没想过，现在…”他似乎是低笑了一声“不够”。",
+              "天旋地转，恍惚间，似乎天地间所有的芙蓉花，连同浩荡月色，一同落入你怀中。",
+            ])
+          ),
+        },
+        {
+          id: "da-4",
+          title: "眼前狐是心上月",
+          content: makeArticleHtml(
+            "眼前狐是心上月",
+            joinLines([
+              "（一）",
+              "难得闲暇，你突发奇想要拉着齐司礼去西湖划船",
+              "只是夏季雨后的假日，划船的人不少，你只顾着把人塞到车里，联系船家的时候犯了难。好不容易联系到一家，有船，船夫却是不够了。",
+              "这倒不难，某只会划船的狐狸被征用了。",
+              "选好了船，你率先上去，兴奋了半天，却还没见他跟上来。",
+              "笨鸟探头，船帘被掀开，只见齐司礼一只手里抓着几捧青嫩的莲蓬，一只手提着只兰色酒壶，衣角被湖上带着水汽的微风吹的微微摆动，与他银白的头发一起，晃得人心乱。",
+              "手里被他塞了莲蓬，还有几颗圆滚滚的白胖莲子，应该是他在路上就剥好了的。",
+              "心里胀满柔软的情绪，你索性躺在船板上，一颗接着一颗嚼莲子。",
+              "听着船桨随着齐司礼的动作，漾开一阵阵水波。他身上的玉佩叮叮当当，是你新刻的，技艺还不够娴熟，导致狐鸟玉佩一边的小鸟总是一下一下啄旁边的小狐狸头。",
+              "“怎么，某只笨鸟嫌自己不够吵，还要再做一只挂在我身上？”",
+              "话是这么说，但这几天不管在哪，你总能听到他身上叮叮当当的声音。",
+              "嗯，是小鸟又在啄狐狸头了。",
+              "摇橹船晃晃悠悠的在乌龟潭上飘啊飘，你看着撑在船头的齐司礼，明明还是晴日万里，却觉得撞见了这世间最好看的月亮",
+              "他说你是不自知的明月，",
+              "却不知对于笨鸟来说，彼时月，此时月，心上月，",
+              "都是一个叫齐司礼的人。",
+              "",
+              "（二）",
+              "水雾漫在船舱，有些凉意，小船晃晃悠悠停在湖面上，",
+              "齐司礼跨步回到船舱，看到仰躺在船板上的你，旁边莲子皮堆成小山，酒壶开着，清光点点。",
+              "你闭着眼，却能感觉到他拉上了船帘，然后，脸上，腰上被毛茸茸的东西扫过。",
+              "睁开眼，果然见几条狐狸尾巴。",
+              "一条垫在你腰下，一条在脖子后当枕头，还有一条在你脸旁。",
+              "齐司礼就这么躺在你身边。",
+              "你推推，当然是推不开，“小船夫，怎么不划了？”",
+              "齐司礼的声音伴着湖水拍打船身的声音传来，“某位客人还没付报酬……”",
+              "莲子的清香混合着他身上的檀香在唇齿间辗转。",
+              "摇橹船晃晃悠悠，慢慢驶向夕阳融化在湖面的金光中。",
+            ])
+          ),
+        },
+        {
+          id: "da-5",
+          title: "桂夜",
+          content: makeArticleHtml(
+            "桂夜",
+            joinLines([
+              "最近光启的桂花陆陆续续开了，整个城市像是泡在了桂花做成的甜酒里，人走在路上，忍不住会猛吸几口，走几步都像是醉在了风里。",
+              "这天晚上下班，你下楼就看到等在不远处的齐司礼，他手里拿着你的围巾，你这几天爱不释手，主要是这条围巾是他亲手织的。",
+              "桂香浓郁的夜晚，你们经常坐在花园的摇椅上，你画着设计图摸鱼，有时看他改设计稿，有时看他修长的手指翻飞，不过几个夜晚，一条软乎乎的围巾就渐渐从他腿上淌到你的腿上。",
+              "你收回思绪，跑过去，齐司礼的笑声跟桂花香一起包裹了你“笨鸟归巢了”，他一边说着，一边把围巾结结实实的系在你脖子上。",
+              "最近下了场秋雨，地上落了不少桂花，",
+              "“走吧”，齐司礼的手包住你的手，又是一阵风，桂花簌簌飘落，不一会又落了一地。",
+              "你看着地上厚厚的一层桂花，突然觉得，如果多堆几层，像毯子一样，扑进去应该会很舒服。",
+              "正神游，再抬头的时候，就看到齐司礼不知什么时候已经用衣角兜了一大捧桂花。",
+              "地上很快铺了一层厚厚的“桂花毯”",
+              "你闭着眼，扑上去，落在了一个温暖的怀里。",
+              "就这么枕着齐司礼的肩，你们倒在浓得化不开的香气中。",
+              "夜晚的天幕中闪着几颗星，你伸手，去抓星光结果落到手心的，是几朵桂花。",
+              "齐司礼侧头，看着不知是抓星星还是抓桂花的女孩，脖子上的围巾分开在两侧，就像一只振翅的小鸟。",
+              "他有些移不开眼。",
+              "就这样躺着，在这雨后潮湿的夜晚，在桂花铺天盖地的包裹中，在齐司礼身边，你的心里生出了贪念，这样的时光，只想要无限延长。",
+              "齐司礼的手紧了紧，温热的体温通过两人叠在一起的衣物传到你身上，软软的，不知为何，好像又回到了那个沉醉在桂花香，躺进桂花堆里的夜晚。一切都那么柔和，妥帖，有种莫名的天长地久的幸福预感。可是总觉得一场雨过去了，桂花落了，这种味道和伴随着的幸福感就一并流走了。",
+              "“桂花每年都会开”，齐司礼拢了拢你的头发，上面还沾着几朵灿黄的桂花，他没有拂去，而是用下巴蹭了蹭，“我们也会一直来看，某只笨鸟想要的桂花毯子，每年都堆一次也未尝不可。”",
+              "有齐司礼的秋天，还有很多很多，足够你慢慢浪费无数个这样的夜晚，牵着身边人的手，醉倒在桂夜中。",
+            ])
+          ),
+        },
+        {
+          id: "da-6",
+          title: "学人狐学你走“鸳鸯戏”",
+          content: makeArticleHtml(
+            "学人狐学你走“鸳鸯戏”",
+            joinLines([
+              "齐司礼发现，最近笨鸟的手机里循环播放的歌单多了一首小曲儿，吃完饭你抱着手机坐沙发上，嘴里还在哼“等你，再落下几笔，等你，再弹奏几曲…”。某只狐狸悄悄去搜了一下，不一会儿，你就听到厨房传来一声轻笑。",
+              "到了散步消食的时间，你跟齐司礼出门。今晚起了兴致，你换上了他刚给你做的一套齐胸襦裙，头上多了枚簪子。图纸用的是你最近大秀没用上的设计，当时你抱着那张图纸可惜它没被用上，谁知道今天出门前，齐司礼就稳稳地把成品插到了你头上。",
+              "温玉被雕成满月的形状，旁边用月光石刻出一片簇着的昙花，一走动，坠着的飞鸟形状的珠子就一摇一晃。你看着飞来飞去小鸟坠子，回头看他，却猝不及防的撞击他含笑的眸子。可恶的狐狸，就这一眼就让你的心砰砰乱挑。",
+              "你背过身，深吸几口气大步往前，手机里又放了那首《鸳鸯戏》，不由自主的跟着节奏迈起步子月光将你的影子拉的很长，你每一下动作带起裙角飘动，落进齐司礼眼中，想到今天查到的视频，齐司礼红着耳朵背起手，跟着你的步子走。",
+              "很快你就发现自己的影子上多了一道颀长的影子，以及，毛茸茸的重影。",
+              "你心一动，本想多欣赏一会儿，可脚步在看到影子的一瞬间就乱了，结果就是，你被身后的齐司礼结结实实的抱住。",
+              "“怎么走神了？”齐司礼的声音烫的你耳朵发红。这样温柔的，带着一点戏谑语调的声音，像是狐狸尾巴蜷成的小勾子挠的你心痒痒。",
+              "“还不是某只狐狸又放耳朵又用美男计”，你顺着力道倒进他怀里。",
+              "你蹭蹭齐司礼的脖子，他抱起你往家的方向走。",
+              "“齐司礼你是学人精”",
+              "“嗯，我学的怎么样？”",
+              "“勉勉强强吧，要是能唱出来就更好了”",
+              "“得寸进尺”",
+              "路不长，却刚好够月光将两人慢悠悠的浸透。",
+              "“谁识曲中意，断弦等你系…”",
+              "“嗯？怎么不唱了？”",
+              "齐司礼抱着你进门“你的小情郎”齐司礼俯身“现在想亲你”…",
+            ])
+          ),
+        },
+        {
+          id: "da-7",
+          title: "不再依赖狐狸算长大吗",
+          content: makeArticleHtml(
+            "不再依赖狐狸算长大吗",
+            joinLines([
+              "周末最快乐的时间莫过于周五晚。",
+              "不过齐司礼的出差给这次的周五晚添了点不一样的感觉。",
+              "以往，你会拉着他打破一些工作日的惯例。",
+              "比如做一晚上你收集菜单上奇奇怪怪的美食，再比如…熬一些不那么健康的夜，收获半哑的嗓子。",
+              "以至于齐司礼已经习惯提前给你准备一杯润喉汤水。",
+              "这周狐狸不在家，什么汤水也用不上，你打起了家里酒窖的主意。",
+              "前段时间你们收集的各地春日花果，有半数被你泡进了酒里，此时不尝，更待何时。",
+              "结果就是，喝完了杏花酒，又尝了尝梨花的，斟了几杯桑葚的。",
+              "还是习惯不了没有他的声音，你拨通了他的电话。",
+              "“唔…齐司礼…”",
+              "电话那头的齐司礼听到了你含糊的声音，手指不经意在手机后敲了一下。",
+              "“舌头都打结了”",
+              "你只觉得他的声音像是顺着电话线缠上来一样，这语气明明是在抓包，却透着藏不住的柔软。",
+              "“嘿嘿…”你起了逗弄他的心思，自从刷到这句话，你早就想试试他会是什么反应了。",
+              "“狐狸哥哥…”",
+              "这四个字一出，你感觉电话那头的齐司礼呼吸明显一滞。",
+              "“不再依赖你，算我长大吗？”",
+              "“真的不打算依赖我了？”，狐狸不按套路出牌。",
+              "什么拼好的狐狸形桃子，衣柜里他亲手做的衣服，每个起心动念被他接住的瞬间…都不依赖…吗？你心里这么想着，有些难受，却还是想知道他在想什么，这么想着，你又喝了口齐司礼酿的酒。",
+              "你的脸向话筒贴得更近。",
+              "“狐狸先生，请好好回答哦～”",
+              "短暂的停顿被他的呼吸声填满，你听到电话那边传来，",
+              "“不再依赖什么，算某只笨鸟变得更厉害了，而且，我从未觉得，你需要全然依赖着我…”",
+              "你的酒醒了一点，齐司礼的声音似乎也离话筒更近了。",
+              "“嗯，是我需要你的依赖。现在可以给我开门了吗…笨鸟大王？”",
+            ])
+          ),
+        },
+        {
+          id: "da-8",
+          title: "狐狸食用指南",
+          content: makeArticleHtml(
+            "狐狸食用指南",
+            joinLines([
+              "你的狐瘾很大，这一点也不能全怪自己，要怪就怪家里那只勾人的狐狸。",
+              "被这只“全世界最善解人意的狐狸精”乱了道心，对于笨鸟来说，实在是一种水到渠成的事情。",
+              "刚洗完澡一身清淡檀香混着笨鸟沐浴露味道的狐狸…",
+              "换衣服时帘子“偶然”打开，露出白皙精瘦腰身的狐狸…",
+              "嘴上说着“口味清淡”，实际上把自己种的花挤满别人送笨鸟的花篮里的狐狸…",
+              "笨鸟想要，笨鸟得到。",
+              "",
+              "只是齐司礼藏的太好，导致一段时间里，笨鸟大王每每抱着他心满意足，以为是自己下饵钓到了狐狸，却不料上钩的其实另有其人。",
+              "毕竟“恃美行凶”的事情，某只狐狸做起来得心应手。",
+              "有时候他只需要站在哪里，裁剪的恰到好处的西装，微敞的领口，一闪而过的缱绻眼神…都让你没来由的想要靠近。而无论是要拒绝他突然卷上腰来的尾巴还是突然冒出来的狐狸耳朵，都是太需要定力的事情。",
+              "跟他在一起时间越久，你就愈发不愿克制自己对于齐司礼的欲望。",
+              "有时候，只是在每一个美好的不像话的瞬间，占有他的欲望便会如藤蔓般疯长，想要无限的，将这些稍纵即逝的瞬间烙印在灵魂深处。",
+              "而这些瞬间，一闪而过的欲念，情愫，甚至是连带着的天马行空的想法，齐司礼都会精准的捕捉到。",
+              "缠绵到电梯停下都不结束的吻…月下飞奔的夜晚…”",
+              "其实哪有什么食用狐狸的规矩，不过是起心动念的每一个瞬间，齐司礼都接住了你的愿望。",
+            ])
+          ),
+        },
+      ],
+    },
+    {
+      id: "dimension",
+      name: "次元篇",
+      articles: [
+        {
+          id: "di-1",
+          title: "当他变成你的棉花娃娃",
+          content: makeArticleHtml(
+            "当他变成你的棉花娃娃",
+            joinLines([
+              "齐司礼有个能去看笨鸟的机会，不是在光启市，他知道，这次能看到的，是屏幕外那个会苦会笑，会抱着各种印着他的纸片，铁片和布片絮絮叨叨的你。",
+              "代价是，变成你的棉花娃娃。",
+              "没有什么犹豫，一个平常的午后，他到了你的世界。",
+              "于是他陪着你吃饭，外出，跟你在各种你生活或是游历过的地方留下合照。终于不是透过屏幕，他看到你眼里的，满的溢出来的光点，那是你看到他的时候才有的，只有他读的懂的爱意。",
+              "晚上，忙了一天的笨鸟终于抱着被子沉沉睡去，坐在床头的娃娃，看着熟睡的笨鸟。明明棉花只有那么一点，心口的地方，还是胀胀的。",
+              "梦里你迷迷糊糊的感觉到被一阵温暖轻轻包裹住，整个人好像蜷进了一个柔软的怀抱，他听到你的呢喃“齐司礼…”",
+              "床边挂着平安符，齐司礼笑笑，藏在棉花娃娃里的心却扑通扑通的跳个不停。",
+              "如果不能在你的世界陪在你身边，他心里已经许下千千万万遍，要笨鸟平安，快乐，自由。",
+              "你种在窗台旁边的一小簇绿植有些发蔫，应该是这几天太忙了没有浇水，清晨的时候，那盆绿植已经舒展开。",
+              "他要走了。",
+              "在他到的这段时间，总听你嚷嚷着要给小人儿缝上九条尾巴。只是“大设计师”的缝纫技术离开光启后似乎打了折扣，做的毛绒尾巴歪歪扭扭的。你说“齐司礼，我缝成这样，你不许笑话我”。",
+              "其实他喜欢。",
+              "回到光启，自己梳狐狸毛的时候，齐司礼到底还是把尾巴毛梳成了你缝给娃娃那样的，歪歪扭扭不甚规整的样子，因为那是你在那个世界，留给他的痕迹。",
+            ])
+          ),
+        },
+        {
+          id: "di-2",
+          title: "勇敢的小鸟，请你高飞，也可以停歇",
+          content: makeArticleHtml(
+            "勇敢的小鸟，请你高飞，也可以停歇",
+            joinLines([
+              "齐司礼是笨鸟的启明星，好像不需要什么刻意的安排，命运的指针指向齐司礼进入你的世界的那一刻，你和他都获得了时间银河里最好的礼物。",
+              "在齐司礼眼里，小鸟会展翅高飞，整个天地，都该是小鸟翅膀可以抵达的方向。但飞累了，或者只是单纯的暂时不想飞，那就扑腾着翅膀落入狐的怀抱吧。",
+              "你可以后悔，可以犯错，可以不用走得那么快，也可以失落，这些都没关系，因为他都会在。",
+              "无论如何，他都希望你可以淋漓尽致的参与到这个世界中，快乐也好，沮丧也好，他会陪着这只跌跌撞撞全力以赴的小鸟。不管怎样，眼前身后，他都是你可以抓住的光。",
+              "爱是魔法，这不是只有小孩子才相信的童话，而是他跨越不同的时空和世界的屏障，无数次在你心里留下最温暖的痕迹。齐司礼的出现，本身就是笨鸟最好的礼物。",
+            ])
+          ),
+        },
+         {
+          id: "di-3",
+          title: "如果你的世界没有他的痕迹",
+          content: makeArticleHtml(
+            "如果你的世界没有他的痕迹",
+            joinLines([
+              "冬天的傍晚，你在湖边散步。",
+              "太阳忽然被林木遮住，几步转弯后，灿灿金光晃在粼粼波光中，突然撞入你的视线。",
+              "好像在一个很遥远的时空，有个人的眸子，是一样的颜色，明亮灿然。与这湖面一样，照的见你，绕在脸侧的发丝，闪着光的眼睛。",
+              "每个冬天都会安安静静围在脖子上的围巾，一阵风过后，似乎有一阵浅淡的白檀香，在鼻尖打转，不肯离开。",
+              "你仰头看柳梢上突然飞起一直小鸟，翅膀扑腾着，耳边渐渐涌入人语声，脚步声，细碎的落叶声…吵吵闹闹。",
+              "”吵吵闹闹”",
+              "是你说的吗？",
+              "可心中涌起的声音，分明来自另一个人，让你想起山间的一阵风，想起毛茸茸的尾巴。",
+              "”齐司礼…”回过神来的时候，你发现自己已经喊出了一个名字",
+              "无数个与这个名字有关的片段，你似乎都已不记得。",
+              "可念出这个名字的瞬间，天地间那些温暖的，辽阔的，让人无故生出眷恋的东西，好像在一瞬间穿透了你。",
+            ])
+          ),
+        },
+      ],
+    },
+  ];
+
+  var slicesArticles = [
+    {
+      id: "callback",
+      title: "熊兔夜奔Callback解析",
+      content: makeArticleHtml(
+        "熊兔夜奔Callback解析",
+        joinLines([
+          "看到陆沉跳伞新卡远海跃金再次出现“牵着手奔跑”，梦回野马私奔主线熊兔的伦敦夜奔。",
+          "野马私奔主线时期的这次奔跑，更多指向反叛原有的规则和秩序。",
+          "从前的陆沉是一个人在寻找逃出口。在野马私奔这一章里，他其实已经做好了毁灭的准备，但在命运的循环里，是你拉住他的手，告诉他Jude应该有另一种结局，带他逃出走向毁灭的那条路。你主动去探寻陆沉的多面，将他摊开阅读，而他也在向你一点点剖开自己。",
+          "这一段在伦敦街头的夜奔其实是从野马私奔到再见荒原熊兔关系变化和命运选择的一个巨大的隐喻。",
+          "这一点真的处理的相当神。",
+          "这里的河流，在某种程度上，可以是是陆沉想要摆脱和毁灭的血族历史，也在一定程度上具象陆沉与你之间有过裂隙的过去",
+          "但当你们拉起手，一起跑过横亘在你们之间的一切时，这场夜奔中，你们成为了彼此的同盟者。",
+          "现在，陆沉已经不再是那个掩盖自己心意，小心翼翼确认兔子小姐爱的小熊了。",
+          "他感觉到了爱，也敢于表现自己的爱。在被“完整的看见”后，陆沉不吝啬一遍遍大胆的索求你的爱意",
+          "这张跳伞卡陆沉简直化身亲亲怪。",
+          "这次卡面的奔跑，依然有一种强烈的自由感，但这次你们只是任性的一起去冒险，像两个开心的孩子，包容且满足着对方的所有想法。",
+          "爱让陆沉重获新生，奔跑也有了新的含义。",
+          "幸福要溢出屏幕了。",
+        ])
+      ),
+    },
+    {
+      id: "character-map",
+      title: "随笔-死亡与新生，爱与“看见”",
+      content: makeArticleHtml(
+        "随笔-死亡与新生，爱与“看见”",
+        joinLines([
+          "总述：",
+          "在走向新生前，陆沉本身的主体性是一直被族群压抑的，但并不是没有，反而异常强悍。他想要毁灭血族的欲望和尝试其实包含着他颠覆规则的主体性，去做他认为对的事情，哪怕玉石俱焚。",
+          "但是他始终处在一个微妙的天平且这个天平是向毁灭倾斜的，他从被族群利用的工具走向毁灭秩序的工具，而打破这一平衡的就是他被爱滋养出的主体性，爱的欲望，活着的欲望，有渴望有贪恋，不再作为工具存在，而是作为完整的陆沉而存在。",
+          "",
+          "【他低下头看手掌心，上面的纹路好像又开始渗出血色。他明明已经杀死了很多人，又为什么仍旧无法接受一个罪人因为自己的疏忽死掉？而这么想着的同时，他又仍在担忧这样的想法是一种软弱。他有点看不清自己了。他想。（群居动物）】",
+          "【“我第一次知道，原来血族也有不那么吓人的惩罚。陆沉：可这样的事，让当时的我感到恐惧。陆沉：于是，那天夜里，我悄悄离开了那对夫妇的家。（昨日成规）】",
+          "",
+          "随笔-爱的逃逸：陆沉在前期自认自己与血族的罪恶融为一体，在个体的认知中承担血族罪恶的一面.对于血族的罪恶他是参与者但有秉持着局外人观察、摇摆的态度。",
+          "掩藏的“软弱”恰是他被压抑着长出枝桠的善意，他对自己和世界的爱意。在昨日成规卡面他逃离泽维尔父母家，其实也是对于爱意的逃逸。一直靠痛苦和亏欠活着的人在面对爱意时会产生本能的畏惧和抗拒。",
+          "",
+          "【街边华灯初上，他就会慢慢踩着柏油马路，去买街边面包店里打折的面包，作为宵夜或是第二天的早餐。看上去脾气不太好的面包店老板总是板着一张脸，做出的面包却飘着诱人的香气。（群居动物）】",
+          "",
+          "随笔：面对自由和存在的无意义性感到焦虑、孤独与荒谬，是对自身存在最深层的反思。陆沉最初被族群定义了存在的意义，作为族群的工具。而他的经历、选择构成了他决定自身存在的关键部分。其实在大家讨论比较多的十五岁“飞翔”三次的剧情或者是他尝试的极限运动都体现出他去淋漓尽致的体验并确立自身存在这一点",
+          "鲜活的生活，对于世界直接的、极致的感知。生活体验的主动选择使曾被规训的人重新获得主体性，这也是陆沉一边走向自己设计的死亡一变下意识地自救的原因之一。",
+          "",
+          "【陆沉终于意识到，是流血与疼痛让他感知到了快乐。（群居动物）】",
+          "随笔：福柯认为自杀是生命政治权力的一个极限点，它是权力无法完全掌控的领域，因为他是个人对自身生命最终行驶的决定权，是对“活着”时主导的权力逻辑的反叛。",
+          "主导生死的掌控伴随的是抛却一切的果断和自由感，看似是毁灭的倾向，但从中生长出的是求生的意志。",
+          "这一点很早就在陆沉身上展现出来了，毁灭的欲望与对自由的追求以一种奇异的形式纠缠对于陆沉来说，死的欲望即生的欲望，在幻光里就有“等血流尽，我将自由”",
+          "在这一阶段，他是想要血族这一种族的罪恶和过去以及自己的过去都毁灭。",
+          "毁灭意味着自由，而设计师的爱给出了另一种答案，另一条可走的路。",
+          "",
+          "【“等到陆沉的背影消失在门口，我收回视线，才蓦地发现指尖沾了一抹鲜红。一股铁腥味随即钻进了鼻腔。鲜血和尸体，满目都是鲜血和尸体。我想看得更清楚些，画面却变成了漆黑。",
+          "我心一颤，陆沉是因为这样受伤了吗？可是，这又关我什么事。我往电梯走，刚走出几步脚却像被什么拉住了一样，停了下来。”（新生乐章4-6 从再见走向再见）】",
+          "",
+          "随笔：打完仗马不停蹄的来取礼服就是想解释清楚婚约的事情，湿漉漉的受伤熊，此男诡计多端；",
+          "在感受到设计师嘴硬下强烈的关心后，陆沉开始一点点试探着所求她的爱，被拆穿了，那就承认，他愿意将自己一点点剖开给她看，但又带着一丝小心翼翼，终究不想让她看到自己的一丝卑劣。",
+          "他暗中观察和感受着她的每一次情感波动，期待她的担心和在意，而当她平静的质问他时，他会落寞，也会更想把真实的自己展现在她面前，甚至把生命放在她手中，来确认她的心。",
+          "",
+          "【我：衣服你让人送回去，我会尽快改好的。陆沉：为什么不杀了我？我：你放开，我要回去。陆沉：刚才为什么放弃？差一点点你就可以做到了。我：我放弃又怎么样？!陆沉：不怎么样，告诉我原因。（新生乐章4-6 从再见走向再见）】",
+          "",
+          "随笔：这时的故事线里陆沉其实已经设计好了之后毁灭血族和自己的计划，比如让Lee做的那个机器人。但他还是像孩子一样执拗的要去确认设计师对他的在意",
+          "这里其实可以“嗅到”一丝存在主义的意味，“他人的意识”是不可穿透的，而死亡这种终极情境的设置慧剥离所有社会伪装，露出未经修饰的真实情感。即在极端的“失控和彻底的交付”中看到爱的本质。",
+          "想起纪德在《地粮》里的形容“一个人在拥吻一件险乎失去的东西时，那种过分的激情”。",
+          "",
+          "【他在说他自己。所以他这也不肯，那也不肯，把所有的可能性都堵死了。因为亏欠会让他感觉活着，而亏欠结束了，生命也结束了。",
+          "+陆沉：人和人之间的关系总要有原因。",
+          "+我：Jude和他的女孩，他们会一起躺在一座很荒凉的山上。Jude会告诉女孩，他是一个由铁片、齿轮和提前设定好的程序组成的机器人。",
+          "他是怎样生、怎样活，又将会怎样死……他又是怎样因为她，得到了一颗鲜红的、勃勃跳动着的心脏。（新生乐章4-6 从再见走向再见）】",
+          "",
+          "随笔-爱拯救之：血族的生存法则中没有除了利益之外的东西，这也是陆沉多年生活在法则之下、利用法则以及在对抗的路上所必须面临和适应的状态。",
+          "死亡是他为自己和族群选择的必然的道路，也是唯一的道路，他走了太久，似乎看不到也不会再选择其他可能。",
+          "Jude是陆沉自我的投射，而幸运的是，设计师并没有按照他设想的故事中那样，像故事中的女孩一样在对他的遗忘中“幸福”的活下去，而是告诉他，他会有更好的结局。",
+          "设计师看到了他，他的记忆，他的痛苦和挣扎、爱的欲望，如何长出跳动的心脏，如何向自己走来。也让他看到亏欠之外还有选择，告诉他，他向自己展露出的一切都会被全盘接受。",
+        ])
+      ),
+    },
+  ];
+
+  var originalArticles = [
+    {
+      id: "storyline",
+      title: "故事主线与章节概括",
+      content: makeArticleHtml(
+        "《逢故人》故事主线与章节概括",
+        joinLines([
+          "《逢故人》-@闻鹤煮酒（豆瓣阅读）",
+          "",
+          "故事简介：铸剑师之女陆云英与自幼相伴的青梅竹马左蓝桥，因家族权谋与皇室博弈自幼被互换身份、分离多年，长大后陆云英在剑阁试锋会重逢已是剑阁阁主的左蓝桥，二人层层揭开身份错位、陈年秘辛与朝堂阴谋，携手平定雁关战乱、粉碎陈海通敌叛国诡计，历经生死抉择、情感纠葛与江湖门派纷争后终成眷属，完成‘仗剑守清明‘的约定。",
+          "",
+          "章节概括：",
+          "",
+          "（第一章）青梅竹马：陈长渡性情突变，陆云英拜师习武初露锋芒",
+          "",
+          "（第二章）关门弟子：余笙笙入堂为关门弟子，婚约暗露，陈长渡对陆云英坦露真心。",
+          "",
+          "（第三章）青影失窃：试锋会青影剑被盗，陆云英借刀夺胜，剑阁阁主显身。",
+          "",
+          "（第四章）前尘浮现：左蓝桥自曝真身乃旧友，身份互换秘辛揭开，往事尘埃落定。",
+          "",
+          "（第五章）山雨欲来：边关战事起父母赴雁关，陈家定亲，江湖朝堂风波将至。",
+          "",
+          "（第六章）剑阁眼线：青影归还楚师弟身份楚师弟身份揭晓，原是剑阁暗线护云英。",
+          "",
+          "（第七章）冷面阁主：陆云英潜入霜识楼查叛国密证，左蓝桥及时相救杀气尽显。",
+          "",
+          "（第八章）毒发之痛：左蓝桥旧毒突发命悬一线，陆云英舍身相救，情愫暗生难自控。",
+          "",
+          "（第九章）情之所至：左蓝桥诉十五年毒恨，剖白心意定情，二人确认相守心意。",
+          "",
+          "（第十章）别离近：左蓝桥以镇北将军身份赴雁关，托付剑阁与陆云英依依惜别。",
+          "",
+          "（第十一章）好物不牢：陈长渡成婚逃婚，陆云英稳守陆府，惊闻左蓝桥重伤失踪。",
+          "",
+          "（第十二章）入渊：陆云英为破局自愿服毒卧底，入宫面帝窃取军情身陷险境。",
+          "",
+          "（第十三章）雁辞：蓑衣老者出现解毒指点，左蓝桥真实名姓与深情缘由揭晓。",
+          "",
+          "（第十四章）再起波澜：皇宫软禁毒势渐重，陈长渡吐露歉疚，西境危机暗伏难安。",
+          "",
+          "（第十五章）暗室重逢：陆云英奔赴雁关救父，暗室与左蓝桥重逢，生死相依。",
+          "",
+          "（第十六章）封喉雪影：刺客突袭刺杀失败，左蓝桥展露绝学，旧部齐邶泄密中都危。",
+          "",
+          "（第十七章）寒色尽：决战前夕二人练剑定情，左蓝桥披甲上阵，生死一战在即。",
+          "",
+          "（第十八章）共剑（上）：左蓝桥毒发对战强敌，慕容晋传药，陆云英奔赴战场相救。",
+          "",
+          "（第十九章）共剑（下）：二人合剑力克北岭怪，惊知其为落泉方丈，双双力竭重伤。",
+          "",
+          "（第二十章）解铃：陆云英昏迷大梦前尘，醒后得知左蓝桥解毒，余笙笙传解毒之讯。",
+          "",
+          "（第二十一章）再入鸿川：左蓝桥眼盲护妻心切，陆云英为解毒重返鸿川身陷迷局。",
+          "",
+          "（第二十二章）无解之解：竹霜青以命换命得解，陈海身亡，陈长渡舍身救云英无悔。",
+          "",
+          "（第二十三章）代堂主：陈府连丧主母，鸿川堂动荡，陆云英临危受命暂代堂主之位。",
+          "",
+          "（第二十四章）会盟邀约：凌微楼遣使邀会盟，陆云英力排众议，决意赴会破局。",
+          "",
+          "（第二十五章）平山公府（上）：陆云英应召入公府，见左蓝桥眼盲心酸，父子对峙暗流涌。",
+          "",
+          "（第二十六章）平山公府（下）：左蓝桥赠刀定情，拜祭亡母，许诺迎娶陆云英为妻。",
+          "",
+          "（第二十七章）三派会盟：雁取山会盟决战，陆云英使出绝学挫败步莲，稳掌江湖盟主。",
+          "",
+          "（第二十八章）离渊：左蓝桥出现接应，二人约定相守，陆云英辞堂归园静待佳期。",
+          "",
+          "（第十九章）春日故人（上）：云游补谱忽传婚讯，陆云英急返中都，怒闯侯府寻真相。",
+          "",
+          "（第三十章）春日故人（下）：真相揭晓原为骗婚，三书六礼十里红妆，春日成婚定终身。",
+          "",
+          "（第三十一章）之子于归：大婚之夜温情缠绻，温泉相伴情意浓，二人相守剑阁安稳度日。",
+          "",
+          "（第三十二章）照影：左蓝桥回忆年少身世互换，初遇陆云英倾心相伴，旧时光影藏深情。",
+        ])
+      ),
+    },
+    {
+      id: "characters",
+      title: "人物设定",
+      content: makeArticleHtml(
+        "人物设定",
+        joinLines([
+          "🗡陆云英 （女主）",
+          "【基础设定】",
+          "身份：铸剑师之女、鸿川堂弟子、雁关大战后的江湖新盟主",
+          "外貌：灵动飒爽，常着青衫",
+          "武器：青影剑",
+          "",
+          "【核心人设】",
+          "开朗通透，重情义，心思细腻",
+          "对感情不强求，当断则断，在感情中打直球",
+          "善于守拙，深谙“木秀于林，风必摧之”，常年收着本事扮猪吃老虎，实则剑道一流，武学造诣深厚，精通铸兵术和机关术",
+          "清醒的狠人：对敌人狠，对自己更狠",
+          "心怀家国大义",
+          "",
+          "【高光时刻】",
+          "试锋会用旧刀夺冠、临危受命接管鸿川堂、假意投诚服毒套取情报，挽救雁关",
+          "",
+          "【成长线】",
+          "从只关心吃好喝好能愉快打架的“废柴师妹” → 目睹雁关战火后扛起家国大义的江湖盟主 → 最终卸下重担，回归本心。",
+          "",
+          "🗡左蓝桥（男主）",
+          "【基础设定】",
+          "身份：剑阁阁主、前武林盟主慕容晋关门弟子,平山公独子",
+          "外貌：玄衣银冠，凤目含霜，眼角有一颗细小泪痣。气质清冷如谪仙，实则杀伐果断。",
+          "武器：落归剑",
+          "特质：身中剧毒“紫骨散”（需定期外出压制）；带有清冽的药草香气。",
+          "",
+          "【核心人设】",
+          "江湖传说中神龙见首不见尾的剑阁之主，高不可攀，武功深不可测。",
+          "幼年因政治原因被送入鸿川堂与陈长渡互换身份，身中剧毒需不断压制，身份不能轻易暴露，背负家族与门派的双重重担。",
+          "",
+          "【性格】",
+          "城府深沉：在江湖上手段狠绝",
+          "性情冰冷的外壳下是缺爱的底色，戒备心很强，但总对女主卸下防备",
+          "顾全大局，冷静沉稳",
+          "极度护短",
+          "苏点： “战力巅峰”+“病弱美人”的结合体。一边咳血一边把反派按在地上摩擦，还要担心吓到老婆。",
+          "",
+          "【高光时刻】剑阁掉马、雁关与陆云英共剑杀敌",
+          "",
+          "🗡陈长渡",
+          "【基础设定】",
+          "身份：鸿川堂少主、陈海之子，江南余家未婚夫",
+          "外貌：桃花眼，身姿挺拔，看起来是完美的世家公子。",
+          "武器：苍川刀（养父左嵩所赠）",
+          "",
+          "【核心人设】",
+          "看似温和，实则偏执",
+          "心思缜密，隐忍内敛",
+          "错位：他才是真正的陈长渡，但因为年幼被送走，回来时已物是人非。他看着陆云英对左蓝桥（假陈长渡）好，只能扮演那个“温柔的师兄”。",
+          "",
+          "【高光时刻】",
+          "与父亲决裂，暗中粉碎鸿川堂叛敌计划，与女主同时服毒并以身为引救下女主。",
+          "",
+          "🗡余笙笙",
+          "【基础设定】",
+          "身份：江南余家长女、鸿川堂关门弟子、陈长渡名义上的妻子，鸿川堂后期真正的定海神针",
+          "外貌：眉眼如画，身段苗条，贵气但不疏离。",
+          "",
+          "【核心人设】",
+          "特质：智商极高，情绪稳定，识大体。",
+          "反差：初登场时以为是娇弱的千金小姐，后来发现她是唯一看透局势中每个人心思的人。",
+          "",
+          "【高光时刻】",
+          "独自完成婚礼促成两家结盟，猜透陈长渡“换命”计划并通知女主，在鸿川堂凋敝时期维系人心",
+          "",
+          "🗡陈海",
+          "【基础设定】",
+          "身份：鸿川堂堂主 、兵器铸造巨头、旧帝棋子",
+          "特质：极度理智，极度冷血，演技派",
+          "",
+          "【核心人设】",
+          "定位：剧情的主要推手和反派，设计换子计划，与旧帝达成舍弃雁关的计划，将重要图纸泄漏给敌国。",
+          "复杂性：为所谓“鸿图大计”可以牺牲一切，对徒弟下毒，成为旧帝和敌国的走狗，但最后舍弃生命救回儿子陈长渡。",
+          "戏剧冲突：师徒反目。陆云英从敬重师父到亲手布局扳倒师父，这种撕裂感是剧情的爆点。",
+        ])
+      ),
+    },
+    {
+      id: "world-era-geo",
+      title: "世界观设定-时代特征+地理志",
+      content: makeArticleHtml(
+        "世界观设定-时代特征+地理志",
+        joinLines([
+          "🗡时代设置",
+          "【时代特征】",
+          "架空古代朝代，前朝已亡，厉武帝萧桉当朝，与太子萧琰形成新旧势力对峙。朝堂与江湖深度交织，边境战事频繁，世家权臣并立，江湖门派与朝廷势力相互渗透，兵器铸造成为各方争夺的核心资源。",
+          "",
+          "【冲突点】",
+          "（1）江湖纷争：三派（剑阁、鸿川堂、凌微楼）争夺武林主导权",
+          "（2）朝堂权斗：皇帝与世家、江湖门派之间的暗中博弈",
+          "（3）边境战争：北狄南侵，雁关之战贯穿主线",
+          "（4）身份纠葛：男主与男二互换身份牵扯到前三个冲突",
+          "",
+          "🗡地理志",
+          "【北方边境】",
+          "雁关：北境最重要的军事要塞，中都屏障",
+          "玉水关：雁关前哨，重要战场",
+          "北营山：周定安军驻扎地，女主父母助周家军守备之处",
+          "狼庭：北狄王庭，乌支河一带",
+          "",
+          "【京畿重地】",
+          "中都（京城）：都城，政治权力中心",
+          "平山公府：平山公左嵩府邸，左蓝桥童年居所",
+          "京郊：紫匀山、平林峰、雁取山、寂明寺等",
+          "紫匀山：主角成长地，陆府与鸿川堂所在地，人烟稀少，山势绵延，竹海遍布",
+          "",
+          "【江湖门派所在地】",
+          "剑阁：楚州",
+          "凌微楼：江东雁屏湖",
+          "鸿川堂：京郊紫匀山",
+          "",
+          "【其他地点】",
+          "寂明寺：紫匀山古寺，女主在此学拳，获得老猿手绝技，接收补全剑谱的使命",
+          "重要人物：落泉方丈（已故）、云明方丈",
+          "醉景楼：女主离开鸿川堂后在江南开设的酒楼，亦为情报收集处",
+        ])
+      ),
+    },
+    {
+      id: "world-factions",
+      title: "世界观设定-势力谱系",
+      content: makeArticleHtml(
+        "世界观设定-势力谱系",
+        joinLines([
+          "🗡江湖势力",
+          "【鸿川堂】",
+          "→堂主：陈海",
+          "→江湖三大派之一，以兵器铸造闻名（“兵器陈”）",
+          "偏重门派间大量兵器铸造，与先帝达成秘密兵器制造约定，作为朝廷势力的延申",
+          "",
+          "→建筑格局：",
+          "霜识楼（禁地，藏机密图纸与密文，含暗阁）",
+          "后山武场、武库楼、弟子庭",
+          "",
+          "→鸿川堂人物谱系：    ",
+          "陈海（堂主）：与旧帝达成买卖兵器图纸的约定，后被囚禁，死于禁术后遗症",
+          "宁芷：陈海之妻，左蓝桥姨母，体弱多病，性情温和",
+          "陈长渡：（少主）：宁芷与陈海之子",
+          "陆云英（女主）：十一弟子，陈海去世后曾任代堂主",
+          "余笙笙：十三弟子（关门弟子）、陈长渡之妻 \t 江南余家长女",
+          "余洵：五师兄，余笙笙堂兄",
+          "赵湛：大师兄，镇派弟子",
+          "楚师弟：十二弟子，实为剑阁密探",
+          "",
+          "【剑阁】",
+          "→阁主：左蓝桥（男主）（现任掌门）",
+          "与朝廷势力分割。江湖三派之首，实力最强，历任阁主佩“落归剑”可号令三门。",
+          "",
+          "→建筑格局：",
+          "停云楼（阁主居所，依山而建，戒备森严）",
+          "秘纸楼（情报中枢）",
+          "试锋台（江湖各派在此举行试锋大会）",
+          "",
+          "→剑阁人物谱系：",
+          "左蓝桥（阁主）：",
+          "慕容晋（前阁主）：前任武林盟主，与北岭怪（落泉）、南川客并列“江湖三圣”，左蓝桥师父",
+          "筝衣（杏衣女子）：流云门掌座，因流云门为慕容晋新创立的小派，常来剑阁担任临时掌座，处理事务",
+          "景池：剑阁掌座，楚师弟之父",
+          "楚师弟：剑阁密探、鸿川堂十二弟子，潜伏鸿川堂多年",
+          "",
+          "【凌微楼】",
+          "楼主：步莲（三门中唯一女掌门，凭一己之力使凌微楼崛起）",
+          "三大门派之一，新兴门派，依湖而建",
+          "",
+          "→建筑特色：",
+          "建于湖水之上的七层主楼",
+          "盛夏湖上千朵赤色红莲",
+          "",
+          "🗡朝堂势力",
+          "【皇室】",
+          "萧桉（厉武帝）",
+          "性好杀伐，欲入狼庭建不世之功，主动舍雁关，以寒水关诱北狄主力，图奇兵反攻",
+          "萧琰（太子→新帝）",
+          "萧桉死后继位，休养生息",
+          "",
+          "【世家】",
+          "左嵩：平山公、开国将军 \t 左蓝桥生父，城府极深，太子（新帝势力代表）",
+          "黄子玉、林硫琰：雁关守将、权贵之子+外戚，心胸狭窄，无韬略",
+          "武将周家：周定安雁关新任将军，陆止挚友+周染：少年女将，周定平之女",
+          "",
+          "🗡敌对势力",
+          "北狄：",
+          "北方流窜的游牧部落，在吞并和掠夺几个其他游牧部落后成为北地最大势力。、",
+          "北狄军特点：以“神”凝聚军心，兵器多来自鸿川堂图纸，作战凶猛残暴，曾屠城五千百姓。",
+          "北岭怪（落泉）：经历前朝权贵污蔑后家破人亡，曾到寂明寺出家，后被追杀，叛变到北狄。北狄军“神”，戴面具，后被陆云英所杀",
+          "",
+          "🗡其他势力",
+          "→剑圣宗师（神秘女子，前朝，已故）武学造诣巅峰，如今的江湖三门武学体系的来源，徒弟为落泉、慕容晋等",
+          "前任阁主慕容晋为武林盟主，左蓝桥之师，已退隐，雁关之战中临危回到剑阁支撑局面",
+          "→铸剑师：陆云英父亲陆止，精通铸剑术，兵器设计。武功卓群，江湖闻名，曾一剑成名。后归隐，隐居在京郊自匀山",
+          "→秘阁（前朝情报机构，故事时间线中已被毁）：陆云英外祖+母亲梅明楹所处势力",
+          "→兵刀宁家：在前朝动荡中衰落，只余两女，宁苓（野心勃勃，宁刀传人，平山公之妻，左蓝桥之母，后被平山公忌惮，遭遇其政敌陷害，最终郁郁而亡），宁芷（宁苓之妹，性情温和，缠绵病榻，陈海之妻，在陈海去世后不久病故）",
+          "→医家：陈重紫（医仙，擅解毒，后助左蓝桥）",
+        ])
+      ),
+    },
+    {
+      id: "world-martial",
+      title: "世界观设定-武学体系",
+      content: makeArticleHtml(
+        "世界观设定-武学体系",
+        joinLines([
+          "🗡剑法、刀法流派",
+          "→封喉雪影：剑圣宗师传承，失传已久的高深剑法，修炼极为复杂",
+          "→老猿手：落泉方丈毕生绝学",
+          "→紫竹留风：剑圣宗师所传招式",
+          "→剑阁剑法：精准狠厉，直击要害；藏力时柔中带刚，剑意磅礴",
+          "→鸿川堂刀法：江湖一绝，借力打力，敌我之力相合",
+          "→凌微楼剑法：双短剑，清鱼出水式，虚实结合",
+          "→箭雨术（暗器）：南川客绝学",
+          "",
+          "🗡兵器谱",
+          "【名剑】",
+          "青影：通体温碧色，可吸收光线反射剑华，陆止巅峰之作，佩戴者陆云英",
+          "落归：剑阁历任阁主佩剑，“落归离鞘寒色尽”，佩戴者左蓝桥",
+          "疏雪：铸剑师陆止所铸，佩戴者梅明楹 \t",
+          "闻霜：为配疏雪剑所铸，佩戴者陆止",
+          "【名刀】",
+          "苍川：古刀，前主人平山公左嵩，“苍川一出天门靖”，佩戴者陈长渡 \t",
+          "凝华: 宁家传家刃，银鞘嵌梅花紫玉, 佩戴者左蓝桥→陆云英",
+          "黄刀: 古刀，后被落归斩断,佩戴者北岭怪",
+          "",
+          "🗡关键组织与制度",
+          "【试锋会】",
+          "主办：剑阁",
+          "性质：江湖新人首次亮相，拔头筹可在武林有一席之地",
+          "规则：群试→单打独斗，外人不得插手（铁律）",
+          "奖励：三首令牌（阴刻-试锋会获得+阳刻-通过阁主测试获得=正式剑客身份）",
+          "",
+          "【三派会盟】",
+          "宗旨：共结江湖太平",
+          "主位争夺：决定江湖话语权",
+          "每十年一次，三派轮流",
+          "",
+          "🗡武学精神内核",
+          "“木秀于林，风必摧之”，守拙哲学贯穿始终",
+          "“仗剑守清明”：主角追求的江湖理想",
+          "“江湖事与朝堂事一旦联系，就有太多身不由己”：江湖与朝堂的纠葛中，分离才是出路",
+          "“身自当之，无谁代者”：个人选择与后果担当，落泉、陈海、主角皆如此",
+        ])
+      ),
+    },
+    {
+      id: "excerpts",
+      title: "原文片段",
+      content: makeArticleHtml(
+        "原文片段",
+        joinLines([
+          "🗡后来我听说那天陈长渡去了三师兄那里一趟，之后我再去找任何人比武，都被礼貌的送了回来。甚至，对我言听计从的小跟班楚师弟也不跟我打了，他自己说，不是打不过我，只是觉得没有打的必要。",
+          "我很郁闷，把自己锁在屋子里喝茶。",
+          "我本来也想学着那些文人侠客喝酒的，奈何我是个一杯倒，酒这种东西对我来说是只可远观，半滴也不敢多沾。",
+          "（第一章 青梅竹马）",
+          "",
+          "",
+
+          "🗡一轮轮比试下来，台上只剩了我还有另外两名剑阁弟子。",
+          "两刀定乾坤，比我预想的难了点。",
+          "其中一个剑阁弟子有点耐不住性子，看着我的老刀冷哼一声，一剑刺了过来，我聚力挥刀，用一招白虹贯日，直直的把他的剑弹了出去，那人还没弄明白怎么回事，就被我用刀抵住了脖子。",
+          "众人哗然，剑阁裁决官中有几个不由得伸长了脖子往下看过来。",
+          "谁知这老唐刀我平时疏于护理，由于方才用力过猛，刀忽然从刀柄处裂开了一道口子，当啷一声掉在了地上。",
+          "又是一片哗然。",
+          "我有些尴尬的抬头，发现这哗然并不全是因为我。",
+          "因为最高处阁主的座位上，忽然坐上去了一个人。而那人正目不转睛的看着我。",
+          "我看过去，见那人着一拢玄色劲装，鸦羽般的墨发以银冠束起，面容清绝，凤目含光，身姿颀长挺拔，自高台传出一种不怒而威的迫人气势。",
+          "（第三章 青影失窃）",
+        
+          "",
+          "",
+          "🗡我随左蓝桥上了楼，门刚关上，就听他道：“你的剑，在我这里。”",
+          "我心底的火刚要喷发出来，又被我生生压了回去。",
+          "剑不在我手上，我怕是打不过他。还是得想想其他它办法。",
+          "“不知左阁主盗剑何为？青影认主，在阁主手里还是不妥。”",
+          "我把“盗”字说的很重。",
+          "左蓝桥朝我一笑，此时的他不似方才在台上那般冷峻，这一笑如山涧浸了日光的凉泉，他向我走来，每一步，都像踩在粼粼波光之上，变换的光阴让人感到陌生而熟悉。",
+          "（第四章 前尘浮现）",
+          "",
+          "",
+
+          "🗡这几日做梦，梦到的却是很久之前，左蓝桥还在鸿川堂被当作陈长渡的那些日子。",
+          "梦里的他安静地站在平林峰顶，清冷的月光将他周身染成了银白色，沾了月华的落归银剑垂在他身侧。他就那样地背对着身后扑压着的夜色，身前千仞峰峦，天地间只有永远也吹不尽的寒风。仿若天门大开，而万山欲倒，他唯以孤身冷剑，决绝相迎。",
+          "我梦到祖父被害的那一晚，他陪我在中都的武库楼猜兵器的名字，那是祖父最后一次回到他耗尽一生心血经营的地方，我记得呼啸而过的箭，还有倒在血泊里的祖父，铁器相撞的声音，近在眼前的刀光。我拼命地跑，直到左蓝桥赶来，把我护在怀里，最后我只看到一把滴着血的银剑，还有溅他到脸上的血痕。",
+          "他褪掉外袍，用里面没沾到血的衣裳擦干了我的眼泪，对我说道：“总有一天，你的刀剑要能伤得了他们。”",
+          "可我习武之后，他又对我说，“小阿云，刀剑沾上太多恩怨就走不出来了，我只想，你保全自己就好。你…还有我。”",
+          "紫匀山悠长的晨钟声淹没了他那句“莫要忘了我，小阿云。”",
+          "（第十二章 入渊）",
+          "",
+          "",
+          "🗡陈长渡看着我良久，陆府前厅灯火通明，而他背对着所有光影，站在我面前，苍青的衣袍在夜风中翻飞，像是一座无声的石像。",
+          "而那双桃花眼正怔怔地盯着我的脸，其中似乎有莹莹的光点在跃动。",
+          "我夺过陈长渡手里的青色药丸，送到了嘴里。",
+          "陈长渡的脸上已经没有了血色，他嘴角抽搐了一下，瘦挺的手指紧紧抓住了衣摆。他看着我，眼里阴云密布，就好像是一场迟来的山雨，积压了所有的阴郁和潮湿，一时间毫无征兆地全部倾泻而下。",
+          "“会很难受。”他说着，忽然仰起了头，迎着烛火，有两颗晶莹明亮的光点从他侧脸滑落。陈长渡的声音有些哽咽：“我会陪你。”",
+          "（第十三章 雁辞）",
+          "",
+          "",
+          "🗡丑时的更声响，残月正挂主帐前的大旗上，左蓝桥此时已经换上了银甲，冰冷的甲光在跃动的烛火间闪动，最终映照在他的脸上。四下安静的只剩噼啪的烛心燃烧之声。烛火明灭间，我只能看到他冷若寒月的侧颜，他的眼神还是那么平静，仿若他不是那十万军将的主帅，也不是统领门派的阁主，仿若他只是要去帐前那片雪地里练剑一样，就那么从容地擦着落归剑，身影如墨般融在一片冷白的月光中。",
+          "可是我知道，身上背负着那么多人的生死，要用他一人的命数，去赌那千万人的命数，他怎能做到云淡风轻？",
+          "我轻身走过去，坐到他身旁，冷月入怀，人影微动，帐外吹进来的夜风卷起他额前的发丝。浓云遮住了月光，月影隐去，四下黯淡，只有落归剑的光华同那银甲的光泽，交相辉映。",
+          "我解开那条水碧色的发带，叠了几下，将它系在落归剑柄。轻盈的带子随着风轻轻摇动，左蓝桥低头看着那发带，默默闭上了眼睛，那时他还在鸿川堂，第一场派内的群试前，她也是解了自己的发带，系在他的剑上，同他说那是她从寂明寺方丈那里听来的祈福法子。",
+          "“很灵验？”",
+          "“很灵验。”",
+          "（第十七章 寒色尽）",
+          "",
+          "",
+          "🗡高处的紫衣人忽然冷笑一声道：“黄泉路上，有美人相伴，左阁主好福气。”",
+          "那人虽说着话，手底下的刀却一刻没停，黄刀卷着烟尘和细雪迎面劈下，左蓝桥借着拄在地上的落归剑，旋身而起，抬剑挡过那一刀，紫衣人一时难以攻破左蓝桥的剑法，忽然将那刀锋一斜，那刀在刺向左蓝桥肩头的一瞬忽然偏转，斜向我心口刺来。",
+          "刀光摄目，却见眼前银光闪动，耳边划过一声尖冷的刀剑相撞之声。一股极强的内力在刀剑间炸开，黄刀霎时被震飞了出去，等光影消散，眼前是断掉一截的黄刀和半个被紫衣包裹着的断臂。",
+          "那断臂上不带一丝血痕，想来是血还没来得及涌出，这半截手臂就已经落了下来。",
+          "落归剑一半没入了石台之上，左蓝桥正握着剑柄，唇上浓稠的血一股股沿着玄衣滚落，凤目血红，乌压着汹涌的杀意。",
+          "左蓝桥抬眸看向紫衣人，冷笑一声，抿去嘴角的血迹，骨节分明的手指苍白如冷玉，浸染了鲜红的血色。",
+          "“黄泉路，你一人走便可。”",
+          "左蓝桥的声音冷到了极点，石台猛然振动，那落归剑被他生生拔了出来。",
+          "（第十九章 共剑-下）",
+          "",
+          "",
+          "🗡后来被这竹霜青折磨时，我也不是没有怕过。毕竟在江湖中看过了太多生死，生命漂萍般的无力感，我不想自己也去体会。",
+          "可后来一步一步，还是咬着牙走了一条我自己从未想过的路。",
+          "我并非不惜命之人，鸿川堂多年守拙，我最看重的便是自己的小命。可经历诸事，我才知道那种无力感有时是躲不掉的，可至少，在最关键的时刻，我的选择都遵从了本心，我并不生悔。",
+          "（第二十一章 再入鸿川）",
+          "",
+           "",
+          "🗡想来真是讽刺，当初侠客云集，弟子众多的鸿川堂，如今连可用之人都寥寥无几。",
+          "这烂摊子，要收拾起来，可难得很。",
+          "看着武库楼尘封的大门，我想起了祖父在中都的武库楼，还有他在楼中留下的一段话。",
+          "“武学为术，术极可舍器；人行江湖，依术而忘道，便如舟行风波而失橹。器之用，非局于术，而多在事故。利益交横不免，盖术之于武，道之于人，器存，道存，人乃存。”",
+          "我对着空荡荡的院落，长叹了一口气。",
+          "当初为雁关，我差点就把小命交代了，如今鸿川堂横在眼前，实在是让我头疼。",
+          "我揣着那块磨的发亮的红铜令牌，去了一趟平林峰。",
+          "坐在一片赤红的霞光里，我拢了的山风，手里横着的青影，将赤金色的光焰尽数受为剑华。",
+          "我的思绪一点点清晰起来，我想，青影剑或许可以拿出来好好用一用了。",
+          "（第二十三章 代堂主）",
+        ])
+      ),
+    },
+    {
+      id: "excerpts",
+      title: "此处有彩蛋放送：自作古体诗节选@闻鹤煮酒",
+      content: makeArticleHtml(
+        "此处有彩蛋放送：自作古体诗节选@闻鹤煮酒",
+        joinLines([
+          "(其一)",
+          "行到崖尽观飞鹭，卧看天心满月明。",
+          "",
+          "(其二)",
+          "江舟一痕晚灯，残火犹温酒浓。",
+          "万里星河入梦，锦官城外春风。",
+          "",
+          "(其三)",
+          "渭北野老泉，山深隐不见。",
+          "枕上千年鹤，门前玉生烟。",
+          "三杯同春醉，五斗共月眠。",
+          "无觅峰回处，但见水如天。",
+          "",
+          "All Rights Reserved",
+          "",
+          "",
+
+          
+        ])
+      ),
+    },
+  ];
+  
+
+  function applyIndexColors(aside) {
+    var c = aside.getAttribute("data-index-color");
+    if (!c) return;
+    aside.querySelectorAll("button").forEach(function (btn) {
+      btn.style.color = c;
+    });
+  }
+
+  function setupEvanSariel(prefix, blocks) {
+    var catsEl = document.getElementById(prefix + "-cats");
+    var artEl = document.getElementById(prefix + "-articles");
+    var contentEl = document.getElementById(prefix + "-content");
+    var aside = catsEl.closest(".detail-aside");
+    var activeCat = blocks[0].id;
+    var activeArticleId = "";
+
+    function renderArticles() {
+      artEl.innerHTML = "";
+      var cat = null;
+      for (var ci = 0; ci < blocks.length; ci++) {
+        if (blocks[ci].id === activeCat) {
+          cat = blocks[ci];
+          break;
+        }
+      }
+      if (!cat) return;
+      cat.articles.forEach(function (a) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = a.title;
+        btn.setAttribute("data-clickable", "");
+        if (a.id === activeArticleId) btn.classList.add("is-active");
+        btn.addEventListener("click", function () {
+          activeArticleId = a.id;
+          artEl.querySelectorAll("button").forEach(function (b) {
+            b.classList.remove("is-active");
+          });
+          btn.classList.add("is-active");
+          contentEl.innerHTML = '<div class="article-body">' + a.content + "</div>";
+          gsap.fromTo(
+            contentEl,
+            { opacity: 0, y: 16 },
+            { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }
+          );
+        });
+        artEl.appendChild(btn);
+      });
+      applyIndexColors(aside);
+    }
+
+    blocks.forEach(function (cat) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = cat.name;
+      btn.setAttribute("data-clickable", "");
+      if (cat.id === activeCat) btn.classList.add("is-active");
+      btn.addEventListener("click", function () {
+        activeCat = cat.id;
+        activeArticleId = "";
+        contentEl.innerHTML = '<p class="placeholder">请从左侧选择文章</p>';
+        catsEl.querySelectorAll("button").forEach(function (b) {
+          b.classList.remove("is-active");
+        });
+        btn.classList.add("is-active");
+        renderArticles();
+      });
+      catsEl.appendChild(btn);
+    });
+    renderArticles();
+    applyIndexColors(aside);
+  }
+
+  function setupSimpleList(listId, contentId, articles) {
+    var artEl = document.getElementById(listId);
+    var contentEl = document.getElementById(contentId);
+    var aside = artEl.closest(".detail-aside");
+    artEl.innerHTML = "";
+    articles.forEach(function (a) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = a.title;
+      btn.setAttribute("data-clickable", "");
+      btn.addEventListener("click", function () {
+        artEl.querySelectorAll("button").forEach(function (b) {
+          b.classList.remove("is-active");
+        });
+        btn.classList.add("is-active");
+        contentEl.innerHTML = '<div class="article-body">' + a.content + "</div>";
+        gsap.fromTo(
+          contentEl,
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }
+        );
+      });
+      artEl.appendChild(btn);
+    });
+    applyIndexColors(aside);
+  }
+
+  /* —— Custom cursor —— */
+  function moveCursor(e) {
+    gsap.to(cursorRing, {
+      x: e.clientX,
+      y: e.clientY,
+      duration: 0.45,
+      ease: "power3.out",
+    });
+    gsap.to(cursorDot, {
+      x: e.clientX,
+      y: e.clientY,
+      duration: 0.08,
+      ease: "power2.out",
+    });
+  }
+
+  function bindCursorHoverables() {
+    var ringScale = { v: 1 };
+    var targets = document.querySelectorAll(
+      "a, button, [data-clickable], .slide-card, .back-btn"
+    );
+    targets.forEach(function (el) {
+      function enter() {
+        gsap.to(cursorRing, { scale: 2.4, opacity: 0.55, duration: 0.28, ease: "power2.out" });
+      }
+      function leave() {
+        gsap.to(cursorRing, { scale: 1, opacity: 1, duration: 0.28, ease: "power2.out" });
+      }
+      el.addEventListener("mouseenter", enter);
+      el.addEventListener("mouseleave", leave);
+    });
+  }
+
+  document.addEventListener("mousemove", moveCursor);
+
+  /* —— Home wheel / keys —— */
+  home.addEventListener(
+    "wheel",
+    function (e) {
+      e.preventDefault();
+      if (isSlideAnimating || isPageTransitioning) return;
+      if (e.deltaY > 0 && currentSlide < SLIDE_COUNT - 1) {
+        goToSlide(currentSlide + 1, true);
+      } else if (e.deltaY < 0 && currentSlide > 0) {
+        goToSlide(currentSlide - 1, true);
+      }
+    },
+    { passive: false }
+  );
+
+  window.addEventListener("keydown", function (e) {
+    if (!home.classList.contains("is-active")) return;
+    if (e.key === "ArrowRight" && currentSlide < SLIDE_COUNT - 1) {
+      goToSlide(currentSlide + 1, true);
+    } else if (e.key === "ArrowLeft" && currentSlide > 0) {
+      goToSlide(currentSlide - 1, true);
+    }
+  });
+
+  window.addEventListener("resize", function () {
+    if (home.classList.contains("is-active")) {
+      gsap.set(sliderTrack, { x: -currentSlide * window.innerWidth });
+    }
+  });
+
+  /* —— Card click —— */
+  document.querySelectorAll("#home .slide-card").forEach(function (card) {
+    card.addEventListener("click", function () {
+      var pageId = card.getAttribute("data-target");
+      if (pageId) onCardNavigate(pageId, card);
+    });
+  });
+
+  /* —— Back —— */
+  document.querySelectorAll("[data-back]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      if (isPageTransitioning) return;
+      var active = document.querySelector(".detail-page.is-active");
+      if (!active) return;
+      isPageTransitioning = true;
+      stopLenis();
+      gsap.to(active, {
+        opacity: 0,
+        x: 40,
+        duration: 0.45,
+        ease: "power3.in",
+        onComplete: function () {
+          active.classList.remove("is-active");
+          gsap.set(active, { x: 0, clearProps: "opacity" });
+          showHome();
+          isPageTransitioning = false;
+        },
+      });
+    });
+  });
+
+  /* —— Init —— */
+  buildDots();
+  bindHomeIndex();
+  gsap.set(sliderTrack, { x: 0 });
+  goToSlide(0, false);
+
+  setupEvanSariel("evan", evanCategoryBlock);
+  setupEvanSariel("sariel", sarielCategoryBlock);
+  setupSimpleList("slices-articles", "slices-content", slicesArticles);
+  setupSimpleList("original-articles", "original-content", originalArticles);
+
+  bindCursorHoverables();
+  startLenisWindow();
+
+  gsap.from(home, { opacity: 0, duration: 0.6, ease: "power2.out" });
+})();
+  </script>
+</body>
+</html>

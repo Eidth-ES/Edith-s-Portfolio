@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>光夜同人 - Evan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html.lenis, html.lenis body { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto !important; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      cursor: none;
+    }
+    .font-special { font-family: "Special Elite", ui-serif, Georgia, serif; }
+
+    .detail-page { min-height: 100vh; }
+    .btn-back {
+      position: fixed;
+      top: 2rem;
+      left: 2rem;
+      z-index: 50;
+      padding: 0.75rem 1.5rem;
+      border: 2px solid #000;
+      border-radius: 0.5rem;
+      background: transparent;
+      font-size: 1rem;
+      cursor: none;
+      transition: background 0.3s, color 0.3s, transform 0.3s;
+    }
+    .btn-back:hover { background: #000; color: #fff; transform: translateX(-4px); }
+    .page-title {
+      position: fixed;
+      top: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      z-index: 50;
+    }
+    .detail-body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 6rem 1.5rem 2rem;
+      gap: 1.5rem;
+    }
+    @media (min-width: 768px) {
+      .detail-body {
+        flex-direction: row;
+        padding: 6rem 3rem 2rem;
+      }
+    }
+    .aside {
+      width: 100%;
+      flex-shrink: 0;
+    }
+    @media (min-width: 768px) {
+      .aside { width: 20rem; padding-right: 2rem; }
+    }
+    .category-nav {
+      display: flex;
+      flex-direction: row;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 2px solid rgba(0,0,0,0.1);
+      overflow-x: auto;
+    }
+    @media (min-width: 768px) {
+      .category-nav { flex-direction: column; overflow: visible; }
+    }
+    .category-nav button {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border: none;
+      border-radius: 0.5rem;
+      background: transparent;
+      white-space: nowrap;
+      cursor: none;
+      font-size: 1rem;
+      transition: background 0.3s, font-weight 0.3s;
+    }
+    .category-nav button:hover { background: rgba(0,0,0,0.05); }
+    .category-nav button.is-active { background: rgba(0,0,0,0.1); font-weight: 700; }
+
+    .article-list {
+      display: flex;
+      flex-direction: row;
+      gap: 0.5rem;
+      overflow-x: auto;
+    }
+    @media (min-width: 768px) {
+      .article-list { flex-direction: column; overflow: visible; }
+    }
+    .article-list button {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border: none;
+      border-radius: 0.5rem;
+      background: transparent;
+      white-space: nowrap;
+      cursor: none;
+      font-size: 1rem;
+      transition: background 0.3s, transform 0.3s;
+    }
+    @media (min-width: 768px) {
+      .article-list button { white-space: normal; }
+    }
+    .article-list button:hover { background: rgba(0,0,0,0.05); transform: translateX(4px); }
+    .article-list button.is-active { background: rgba(0,0,0,0.1); font-weight: 700; }
+
+    .main-col { flex: 1; }
+    @media (min-width: 768px) {
+      .main-col { padding-left: 2rem; }
+    }
+    .content-box {
+      background: #fff;
+      border-radius: 1rem;
+      padding: 2rem;
+      min-height: 60vh;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+    }
+    @media (min-width: 768px) {
+      .content-box { padding: 3rem; }
+    }
+    .empty-hint { color: #9ca3af; text-align: center; padding: 5rem 0; font-style: italic; margin: 0; }
+    .prose { color: #000; max-width: none; font-size: 1.125rem; line-height: 1.75; }
+    .prose h1 { font-size: 2.25rem; margin: 0 0 1rem; font-weight: 700; }
+    .prose p { margin: 0 0 1rem; }
+
+    .custom-cursor-ring {
+      position: fixed; top: 0; left: 0; width: 2.5rem; height: 2.5rem;
+      border: 2px solid #000; border-radius: 50%; pointer-events: none; z-index: 9999;
+      mix-blend-mode: difference; transform: translate(-50%, -50%); background: transparent;
+    }
+    .custom-cursor-dot {
+      position: fixed; top: 0; left: 0; width: 0.5rem; height: 0.5rem;
+      background: #000; border-radius: 50%; pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+</head>
+<body class="lenis lenis-smooth">
+  <div id="pageRoot" class="detail-page">
+    <button type="button" id="btnBack" class="btn-back font-special" data-clickable>← 返回</button>
+    <h1 id="pageTitle" class="page-title">光夜同人 - Evan</h1>
+    <div class="detail-body">
+      <aside class="aside">
+        <nav id="categoryNav" class="category-nav" aria-label="分类"></nav>
+        <div id="articleList" class="article-list" role="list"></div>
+      </aside>
+      <main class="main-col">
+        <div class="content-box" id="contentBox">
+          <p class="empty-hint" id="emptyHint">请从左侧选择文章</p>
+          <div class="prose" id="articleBody" style="display: none;"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <div class="custom-cursor-ring" id="cursorRing" aria-hidden="true"></div>
+  <div class="custom-cursor-dot" id="cursorDot" aria-hidden="true"></div>
+
+  <script>
+    (function () {
+      var CATEGORIES = [
+        {
+          id: "epilogue",
+          name: "后记篇",
+          articles: [
+            { id: "ep-1", title: "后记篇 - 文章标题 1", content: "<h1>后记篇 - 文章 1</h1><p>这里是文章内容，后续可以替换为真实内容...</p>" },
+            { id: "ep-2", title: "后记篇 - 文章标题 2", content: "<h1>后记篇 - 文章 2</h1><p>这里是文章内容...</p>" },
+            { id: "ep-3", title: "后记篇 - 文章标题 3", content: "<h1>后记篇 - 文章 3</h1><p>这里是文章内容...</p>" },
+            { id: "ep-4", title: "后记篇 - 文章标题 4", content: "<h1>后记篇 - 文章 4</h1><p>这里是文章内容...</p>" },
+            { id: "ep-5", title: "后记篇 - 文章标题 5", content: "<h1>后记篇 - 文章 5</h1><p>这里是文章内容...</p>" }
+          ]
+        },
+        {
+          id: "daily",
+          name: "日常篇",
+          articles: [
+            { id: "da-1", title: "日常篇 - 文章标题 1", content: "<h1>日常篇 - 文章 1</h1><p>这里是文章内容...</p>" },
+            { id: "da-2", title: "日常篇 - 文章标题 2", content: "<h1>日常篇 - 文章 2</h1><p>这里是文章内容...</p>" },
+            { id: "da-3", title: "日常篇 - 文章标题 3", content: "<h1>日常篇 - 文章 3</h1><p>这里是文章内容...</p>" },
+            { id: "da-4", title: "日常篇 - 文章标题 4", content: "<h1>日常篇 - 文章 4</h1><p>这里是文章内容...</p>" },
+            { id: "da-5", title: "日常篇 - 文章标题 5", content: "<h1>日常篇 - 文章 5</h1><p>这里是文章内容...</p>" }
+          ]
+        },
+        {
+          id: "dimension",
+          name: "次元篇",
+          articles: [
+            { id: "di-1", title: "次元篇 - 文章标题 1", content: "<h1>次元篇 - 文章 1</h1><p>这里是文章内容...</p>" },
+            { id: "di-2", title: "次元篇 - 文章标题 2", content: "<h1>次元篇 - 文章 2</h1><p>这里是文章内容...</p>" },
+            { id: "di-3", title: "次元篇 - 文章标题 3", content: "<h1>次元篇 - 文章 3</h1><p>这里是文章内容...</p>" },
+            { id: "di-4", title: "次元篇 - 文章标题 4", content: "<h1>次元篇 - 文章 4</h1><p>这里是文章内容...</p>" },
+            { id: "di-5", title: "次元篇 - 文章标题 5", content: "<h1>次元篇 - 文章 5</h1><p>这里是文章内容...</p>" }
+          ]
+        }
+      ];
+      var bgColor = "hsl(334, 25%, 95%)";
+      var indexColor = "hsl(334, 25%, 40%)";
+
+      var pageRoot = document.getElementById("pageRoot");
+      var categoryNav = document.getElementById("categoryNav");
+      var articleList = document.getElementById("articleList");
+      var contentBox = document.getElementById("contentBox");
+      var emptyHint = document.getElementById("emptyHint");
+      var articleBody = document.getElementById("articleBody");
+      var activeCategory = CATEGORIES[0].id;
+      var activeArticle = "";
+
+      pageRoot.style.backgroundColor = bgColor;
+
+      function renderCategories() {
+        categoryNav.innerHTML = "";
+        CATEGORIES.forEach(function (cat) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.textContent = cat.name;
+          b.style.color = indexColor;
+          b.setAttribute("data-clickable", "");
+          b.setAttribute("data-cat-id", cat.id);
+          b.className = cat.id === activeCategory ? "is-active" : "";
+          b.addEventListener("mouseenter", onEnter);
+          b.addEventListener("mouseleave", onLeave);
+          categoryNav.appendChild(b);
+        });
+      }
+
+      function renderArticles() {
+        articleList.innerHTML = "";
+        var cat = CATEGORIES.find(function (c) { return c.id === activeCategory; });
+        var arts = cat ? cat.articles : [];
+        arts.forEach(function (art) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.textContent = art.title;
+          b.style.color = indexColor;
+          b.setAttribute("data-clickable", "");
+          b.setAttribute("data-article-id", art.id);
+          b.className = art.id === activeArticle ? "is-active" : "";
+          b.addEventListener("mouseenter", onEnter);
+          b.addEventListener("mouseleave", onLeave);
+          articleList.appendChild(b);
+        });
+      }
+
+      function showArticle(art) {
+        activeArticle = art.id;
+        articleBody.innerHTML = art.content;
+        articleBody.style.display = "block";
+        emptyHint.style.display = "none";
+        renderArticles();
+        gsap.fromTo(".content-box", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" });
+      }
+
+      categoryNav.addEventListener("click", function (e) {
+        var t = e.target.closest("[data-cat-id]");
+        if (!t) return;
+        activeCategory = t.getAttribute("data-cat-id");
+        activeArticle = "";
+        articleBody.innerHTML = "";
+        articleBody.style.display = "none";
+        emptyHint.style.display = "block";
+        renderCategories();
+        renderArticles();
+      });
+
+      articleList.addEventListener("click", function (e) {
+        var t = e.target.closest("[data-article-id]");
+        if (!t) return;
+        var id = t.getAttribute("data-article-id");
+        var cat = CATEGORIES.find(function (c) { return c.id === activeCategory; });
+        var art = cat && cat.articles.find(function (a) { return a.id === id; });
+        if (art) showArticle(art);
+      });
+
+      var cursorRing = document.getElementById("cursorRing");
+      var cursorDot = document.getElementById("cursorDot");
+      function moveCursor(e) {
+        gsap.to(cursorRing, { x: e.clientX, y: e.clientY, duration: 0.5, ease: "power3.out" });
+        gsap.to(cursorDot, { x: e.clientX, y: e.clientY, duration: 0.1 });
+      }
+      function onEnter() { gsap.to(cursorRing, { scale: 2.5, opacity: 0.5, duration: 0.3, ease: "power2.out" }); }
+      function onLeave() { gsap.to(cursorRing, { scale: 1, opacity: 1, duration: 0.3, ease: "power2.out" }); }
+
+      document.getElementById("btnBack").addEventListener("click", function () {
+        gsap.to(pageRoot, {
+          opacity: 0,
+          x: 100,
+          duration: 0.5,
+          ease: "power3.in",
+          onComplete: function () { window.location.href = "index.html"; }
+        });
+      });
+      document.getElementById("btnBack").addEventListener("mouseenter", onEnter);
+      document.getElementById("btnBack").addEventListener("mouseleave", onLeave);
+
+      renderCategories();
+      renderArticles();
+
+      gsap.fromTo(pageRoot, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" });
+
+      var lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+      function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+      requestAnimationFrame(raf);
+
+      document.addEventListener("mousemove", moveCursor);
+    })();
+  </script>
+</body>
+</html>

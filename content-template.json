@@ -1,0 +1,51 @@
+{
+  "novels": [
+    {
+      "id": "novel-1",
+      "title": "小说标题示例",
+      "content": "# 小说标题示例\n\n这是小说的正文内容...\n\n## 第一章\n\n这里是第一章的内容。\n\n## 第二章\n\n这里是第二章的内容。"
+    }
+  ],
+  "light-night": {
+    "evan": {
+      "postscript": [
+        {
+          "id": "evan-postscript-1",
+          "title": "卡面后记示例",
+          "content": "# 卡面后记示例\n\n这是陆沉的卡面后记内容..."
+        }
+      ],
+      "daily": [
+        {
+          "id": "evan-daily-1",
+          "title": "日常篇示例",
+          "content": "# 日常篇示例\n\n这是陆沉的日常篇内容..."
+        }
+      ],
+      "dimension": [
+        {
+          "id": "evan-dimension-1",
+          "title": "次元篇示例",
+          "content": "# 次元篇示例\n\n这是陆沉的次元篇内容..."
+        }
+      ]
+    },
+    "sariel": {
+      "postscript": [],
+      "daily": [],
+      "dimension": []
+    },
+    "slices": {
+      "postscript": [],
+      "daily": [],
+      "dimension": []
+    }
+  },
+  "film-tv": [
+    {
+      "id": "filmtv-1",
+      "title": "影视二创标题示例",
+      "content": "# 影视二创标题示例\n\n这是影视二创的正文内容..."
+    }
+  ]
+}

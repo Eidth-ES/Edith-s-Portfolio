@@ -1,0 +1,102 @@
+* {
+  box-sizing: border-box;
+}
+
+.component {
+  display: flex;
+  align-items: center;
+  background: #ffffffbf;
+  width: 431px;
+  height: 637px;
+
+  .rectangle27 {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    flex-grow: 1;
+    align-items: flex-start;
+    border-radius: 43px;
+    background: #ffffff9c;
+    padding: 31px 18px 79px 25px;
+
+    .text3 {
+      position: absolute;
+      top: 90px;
+      left: 24px;
+      width: 387px;
+      height: 250px;
+      letter-spacing: 0;
+      color: #000000;
+      font-family: "Special Elite", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+      font-size: 24px;
+
+      .text {
+        letter-spacing: 0;
+        color: #000000;
+        font-family: "Special Elite", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+        font-size: 24px;
+      }
+
+      .text2 {
+        line-height: 30px;
+        letter-spacing: 0;
+        color: #000000;
+        font-family: "Special Elite", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+        font-size: 24px;
+      }
+    }
+
+    .autoWrapper {
+      display: flex;
+      position: relative;
+      flex-direction: column;
+      align-items: flex-start;
+      align-self: stretch;
+      padding-right: 0;
+      padding-left: 0;
+
+      .awards {
+        margin: 0px 0px 0px 103px;
+        width: 173px;
+        height: 36px;
+        text-align: center;
+        letter-spacing: 0;
+        color: #000000;
+        font-family: "Special Elite", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+        font-size: 36px;
+      }
+
+      .text4 {
+        margin: 15px 0px 0px 118px;
+        width: 137px;
+        height: 32px;
+        text-align: center;
+        letter-spacing: 0;
+        color: #000000;
+        font-family: "Special Elite", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+        font-size: 32px;
+      }
+
+      .text5 {
+        margin: 255px 0px 0px 118px;
+        width: 137px;
+        height: 32px;
+        text-align: center;
+        letter-spacing: 0;
+        color: #000000;
+        font-family: "Special Elite", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+        font-size: 32px;
+      }
+
+      .text6 {
+        margin: 14px 0px 0px;
+        width: 388px;
+        height: 144px;
+        letter-spacing: 0;
+        color: #000000;
+        font-family: "Special Elite", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+        font-size: 24px;
+      }
+    }
+  }
+}

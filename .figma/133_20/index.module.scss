@@ -1,0 +1,41 @@
+* {
+  box-sizing: border-box;
+}
+
+.component {
+  position: relative;
+  width: 331px;
+  height: 254px;
+
+  .frame {
+    display: flex;
+    position: absolute;
+    top: 11px;
+    left: 10px;
+    align-items: flex-start;
+    box-shadow: 6px 4px 4px 0px #00000040;
+    padding-right: 12px;
+    padding-bottom: 12px;
+    width: 310px;
+    height: 233px;
+    rotate: -5deg;
+
+    .framePolaroidImageSp {
+      margin-top: -11px;
+      margin-left: -10px;
+      box-shadow: 0px 0px 6px 0px #0000001a;
+      background: #efeeee;
+      width: 309px;
+      height: 231px;
+    }
+  }
+
+  .image1 {
+    position: absolute;
+    top: 27px;
+    left: 33px;
+    width: 265px;
+    height: 174px;
+    rotate: -5deg;
+  }
+}

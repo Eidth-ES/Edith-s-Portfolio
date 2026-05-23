@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>作品集</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html.lenis, html.lenis body { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto !important; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f5f2ef;
+      color: #0a0a0a;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      cursor: none;
+      overflow: hidden;
+    }
+    .font-special { font-family: "Special Elite", ui-serif, Georgia, serif; }
+
+    .slider-root {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #f5f2ef;
+    }
+    .slider-wrapper {
+      display: flex;
+      height: 100%;
+      will-change: transform;
+    }
+    .slide-pane {
+      width: 100vw;
+      height: 100vh;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem clamp(2rem, 5vw, 5rem);
+    }
+    .slide-card {
+      position: relative;
+      width: 100%;
+      max-width: 56rem;
+      aspect-ratio: 4 / 3;
+      cursor: pointer;
+    }
+    .slide-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.18);
+      transition: box-shadow 0.5s ease;
+    }
+    .slide-card:hover .slide-card-inner { box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.25); }
+    .slide-card-img-wrap {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .slide-card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.7s ease;
+    }
+    .slide-card:hover .slide-card-img { transform: scale(1.05); }
+    .slide-card-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.3), transparent, transparent);
+      pointer-events: none;
+    }
+    .slide-card-border {
+      position: absolute;
+      inset: 0;
+      border-radius: 1rem;
+      border: 4px solid rgba(255,255,255,0.2);
+      pointer-events: none;
+    }
+    .slide-card-shine {
+      position: absolute;
+      inset: -4px;
+      border-radius: 1rem;
+      opacity: 0.3;
+      pointer-events: none;
+      background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
+    }
+    .slide-card h2 {
+      position: absolute;
+      bottom: -4rem;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+      font-size: clamp(1.25rem, 4vw, 2.25rem);
+      font-weight: 700;
+      text-align: center;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+
+    .slider-dots {
+      position: fixed;
+      bottom: 3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 1rem;
+      z-index: 50;
+    }
+    .slider-dot {
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 9999px;
+      border: none;
+      padding: 0;
+      cursor: none;
+      background: rgba(0,0,0,0.3);
+      transition: transform 0.3s, background 0.3s;
+    }
+    .slider-dot:hover { background: rgba(0,0,0,0.5); }
+    .slider-dot.is-active {
+      background: #000;
+      transform: scale(1.5);
+    }
+
+    .scroll-hint {
+      position: fixed;
+      right: 2rem;
+      top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+      font-size: 0.875rem;
+      letter-spacing: 0.2em;
+      opacity: 0.5;
+      z-index: 40;
+      pointer-events: none;
+    }
+
+    .custom-cursor-ring {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 2.5rem;
+      height: 2.5rem;
+      border: 2px solid #000;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: difference;
+      transform: translate(-50%, -50%);
+      background: transparent;
+    }
+    .custom-cursor-dot {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0.5rem;
+      height: 0.5rem;
+      background: #000;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.umd.js"></script>
+</head>
+<body class="lenis lenis-smooth">
+  <div class="slider-root" id="sliderRoot">
+    <div class="slider-wrapper" id="sliderWrapper">
+      <div class="slide-pane">
+        <div class="slide-card slide-card--0" data-clickable data-href="evan.html" data-index="0">
+          <div class="slide-card-inner">
+            <div class="slide-card-img-wrap">
+              <img class="slide-card-img" src="images/evan.jpg" alt="光夜同人-Evan" />
+              <div class="slide-card-gradient"></div>
+            </div>
+            <div class="slide-card-border"></div>
+            <div class="slide-card-shine"></div>
+          </div>
+          <h2>光夜同人-Evan</h2>
+        </div>
+      </div>
+      <div class="slide-pane">
+        <div class="slide-card slide-card--1" data-clickable data-href="sariel.html" data-index="1">
+          <div class="slide-card-inner">
+            <div class="slide-card-img-wrap">
+              <img class="slide-card-img" src="images/sariel.jpg" alt="光夜同人-Sariel" />
+              <div class="slide-card-gradient"></div>
+            </div>
+            <div class="slide-card-border"></div>
+            <div class="slide-card-shine"></div>
+          </div>
+          <h2>光夜同人-Sariel</h2>
+        </div>
+      </div>
+      <div class="slide-pane">
+        <div class="slide-card slide-card--2" data-clickable data-href="slices.html" data-index="2">
+          <div class="slide-card-inner">
+            <div class="slide-card-img-wrap">
+              <img class="slide-card-img" src="images/slices.jpg" alt="光夜切片" />
+              <div class="slide-card-gradient"></div>
+            </div>
+            <div class="slide-card-border"></div>
+            <div class="slide-card-shine"></div>
+          </div>
+          <h2>光夜切片</h2>
+        </div>
+      </div>
+      <div class="slide-pane">
+        <div class="slide-card slide-card--3" data-clickable data-href="original.html" data-index="3">
+          <div class="slide-card-inner">
+            <div class="slide-card-img-wrap">
+              <img class="slide-card-img" src="images/original.jpg" alt="原创武侠言情" />
+              <div class="slide-card-gradient"></div>
+            </div>
+            <div class="slide-card-border"></div>
+            <div class="slide-card-shine"></div>
+          </div>
+          <h2>原创武侠言情</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="slider-dots" id="sliderDots"></div>
+    <div class="scroll-hint">SCROLL →</div>
+  </div>
+
+  <div class="custom-cursor-ring" id="cursorRing" aria-hidden="true"></div>
+  <div class="custom-cursor-dot" id="cursorDot" aria-hidden="true"></div>
+
+  <script>
+    (function () {
+      var slides = [
+        { id: "evan", title: "光夜同人-Evan", image: "images/evan.jpg", href: "evan.html" },
+        { id: "sariel", title: "光夜同人-Sariel", image: "images/sariel.jpg", href: "sariel.html" },
+        { id: "slices", title: "光夜切片", image: "images/slices.jpg", href: "slices.html" },
+        { id: "original", title: "原创武侠言情", image: "images/original.jpg", href: "original.html" }
+      ];
+
+      var wrapper = document.getElementById("sliderWrapper");
+      var root = document.getElementById("sliderRoot");
+      var dotsEl = document.getElementById("sliderDots");
+      var currentIndex = 0;
+      var isAnimating = false;
+
+      wrapper.style.width = slides.length * 100 + "vw";
+
+      slides.forEach(function (_, i) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "slider-dot" + (i === 0 ? " is-active" : "");
+        b.setAttribute("data-clickable", "");
+        b.setAttribute("data-slide-index", String(i));
+        b.setAttribute("aria-label", "切换到第 " + (i + 1) + " 张");
+        dotsEl.appendChild(b);
+      });
+
+      function syncDots() {
+        var dots = dotsEl.querySelectorAll(".slider-dot");
+        dots.forEach(function (d, i) {
+          d.classList.toggle("is-active", i === currentIndex);
+        });
+      }
+
+      function syncCards() {
+        var cards = document.querySelectorAll(".slide-card");
+        cards.forEach(function (card, i) {
+          gsap.to(card, {
+            scale: i === currentIndex ? 1 : 0.9,
+            opacity: i === currentIndex ? 1 : 0.6,
+            duration: i === currentIndex || Math.abs(i - currentIndex) <= 1 ? 0.8 : 0.6,
+            ease: "power2.out"
+          });
+        });
+      }
+
+      function goToSlide(index) {
+        if (isAnimating || index === currentIndex) return;
+        if (index < 0 || index >= slides.length) return;
+        isAnimating = true;
+        currentIndex = index;
+        syncDots();
+        gsap.to(wrapper, {
+          x: -index * window.innerWidth,
+          duration: 1,
+          ease: "power3.inOut",
+          onComplete: function () { isAnimating = false; }
+        });
+        syncCards();
+      }
+
+      dotsEl.addEventListener("click", function (e) {
+        var t = e.target.closest("[data-slide-index]");
+        if (!t) return;
+        goToSlide(parseInt(t.getAttribute("data-slide-index"), 10));
+      });
+
+      document.querySelectorAll(".slide-card").forEach(function (card) {
+        card.addEventListener("click", function () {
+          var href = card.getAttribute("data-href");
+          gsap.to(card, {
+            scale: 1.05,
+            duration: 0.2,
+            ease: "power2.out",
+            onComplete: function () {
+              gsap.to(card, {
+                scale: 0,
+                opacity: 0,
+                duration: 0.5,
+                ease: "power3.in",
+                onComplete: function () { window.location.href = href; }
+              });
+            }
+          });
+        });
+      });
+
+      root.addEventListener("wheel", function (e) {
+        e.preventDefault();
+        if (isAnimating) return;
+        if (e.deltaY > 0 && currentIndex < slides.length - 1) goToSlide(currentIndex + 1);
+        else if (e.deltaY < 0 && currentIndex > 0) goToSlide(currentIndex - 1);
+      }, { passive: false });
+
+      window.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowRight" && currentIndex < slides.length - 1) goToSlide(currentIndex + 1);
+        else if (e.key === "ArrowLeft" && currentIndex > 0) goToSlide(currentIndex - 1);
+      });
+
+      window.addEventListener("resize", function () {
+        gsap.set(wrapper, { x: -currentIndex * window.innerWidth });
+      });
+
+      var lenis = new Lenis({
+        duration: 1.2,
+        easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+        orientation: "vertical",
+        gestureOrientation: "vertical",
+        smoothWheel: true,
+        wheelMultiplier: 1
+      });
+      function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+
+      gsap.set(wrapper, { x: 0 });
+      syncCards();
+
+      /* Custom cursor */
+      var cursorRing = document.getElementById("cursorRing");
+      var cursorDot = document.getElementById("cursorDot");
+      function moveCursor(e) {
+        gsap.to(cursorRing, { x: e.clientX, y: e.clientY, duration: 0.5, ease: "power3.out" });
+        gsap.to(cursorDot, { x: e.clientX, y: e.clientY, duration: 0.1 });
+      }
+      function onEnter() {
+        gsap.to(cursorRing, { scale: 2.5, opacity: 0.5, duration: 0.3, ease: "power2.out" });
+      }
+      function onLeave() {
+        gsap.to(cursorRing, { scale: 1, opacity: 1, duration: 0.3, ease: "power2.out" });
+      }
+      document.addEventListener("mousemove", moveCursor);
+      function bindClickables() {
+        document.querySelectorAll("a, button, [data-clickable]").forEach(function (el) {
+          el.addEventListener("mouseenter", onEnter);
+          el.addEventListener("mouseleave", onLeave);
+        });
+      }
+      bindClickables();
+    })();
+  </script>
+</body>
+</html>
