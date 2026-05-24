@@ -1211,8 +1211,9 @@ h1, h2, h3, .en {
     justify-content: space-between;
     border-radius: 51px;
     background: #ffffff;
-    width: 665px;
-    min-width: 665px;
+    width: clamp(320px, 52vw, 665px);
+    min-width: 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 #about .about-figma-shell .easter-frame .browseCollectionButt {
@@ -1224,6 +1225,7 @@ h1, h2, h3, .en {
     background: #b63e7e;
     width: 181px;
     height: 306px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
 #about .about-figma-shell .easter-frame .browseCollectionButt .text3 {
@@ -1231,7 +1233,8 @@ h1, h2, h3, .en {
     width: 290px;
     text-align: center;
     letter-spacing: 0;
-    color: #f4ecdf;
+    color: #ffffff;
+    font-family: "Special Elite", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
     font-size: 32px;
 }
 
@@ -1251,13 +1254,20 @@ h1, h2, h3, .en {
 }
 
 #about .about-figma-shell .easter-frame .rectangle2 .text4 {
-    margin: 20px 0px 0px;
-    width: 446px;
-    height: 214px;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 20px 16px 0 0;
+    width: auto;
+    min-height: 214px;
+    height: auto;
     letter-spacing: 0;
     color: #b63e7e;
     font-family: "Special Elite", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
-    font-size: 36px;
+    font-size: clamp(14px, 1.4vw, 24px);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
 }
 
 #about .about-figma-shell .easter-frame .autoWrapper {
@@ -1278,27 +1288,34 @@ h1, h2, h3, .en {
     width: 355px;
 }
 
-#about .about-figma-shell .easter-frame .text5 {
+#about .about-figma-shell .easter-frame .text5,
+#about .about-figma-shell .easter-frame .text6 {
     width: 280px;
     text-align: center;
     letter-spacing: 0;
-    color: #f5f5f5;
+    color: #ffffff;
     font-family: "Special Elite", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
-    font-size: 36px;
+    font-size: clamp(22px, 1.8vw, 36px);
+    line-height: 1.2;
+}
+
+#about .about-figma-shell .easter-frame .rectangle25,
+#about .about-figma-shell .easter-frame .rectangle26 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 48px;
+    background: #b63e7e;
+    padding: 22px 42px 18px 33px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
 #about .about-figma-shell .easter-frame .rectangle25 {
-    border-radius: 48px;
-    background: #b63e7eb8;
-    padding: 22px 42px 9px 33px;
     animation: easterFloat 4.5s ease-in-out infinite;
 }
 
 #about .about-figma-shell .easter-frame .rectangle26 {
     margin-top: 73px;
-    border-radius: 48px;
-    background: #b63e7e;
-    padding: 19px 35px 11px 41px;
     animation: easterFloat 5.2s ease-in-out infinite;
     animation-delay: 0.4s;
 }
